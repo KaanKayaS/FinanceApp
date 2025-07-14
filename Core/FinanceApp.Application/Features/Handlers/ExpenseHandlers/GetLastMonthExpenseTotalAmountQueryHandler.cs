@@ -57,7 +57,7 @@ namespace FinanceApp.Application.Features.Handlers.ExpenseHandlers
                                  .Concat(mapInstructions)
                                  .ToList();
 
-            var totalAmount = combinedList.Sum(x => x.Amount);
+            var totalAmount = combinedList.Sum(x => x.Amount); //son 1 aydaki amountların toplamını getirir
 
             return totalAmount;
         }
