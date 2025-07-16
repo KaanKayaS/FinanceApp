@@ -1,6 +1,7 @@
 ﻿using FinanceApp.Application.Interfaces.Repositories;
 using FinanceApp.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
@@ -62,10 +63,13 @@ namespace FinanceApp.Persistence.Repositories
         }
         public async Task<int> CountAsync(Expression<Func<T, bool>>? predicate = null)
         {
-            Table.AsNoTracking();
-            if (predicate is not null) Table.Where(predicate);
+            var query = Table.AsNoTracking();
 
-            return await Table.CountAsync();
+            if (predicate is not null)
+                query = query.Where(predicate);
+
+            return await query.CountAsync();
         }
+
     }
 }

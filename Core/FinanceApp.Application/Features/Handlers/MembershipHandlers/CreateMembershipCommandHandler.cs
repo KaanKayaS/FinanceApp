@@ -43,7 +43,7 @@ namespace FinanceApp.Application.Features.Handlers.MembershipHandlers
 
             Memberships existingMembership = await unitOfWork.GetReadRepository<Memberships>().GetAsync(x => x.DigitalPlatformId == request.DigitalPlatformId && x.UserId == userId);
 
-            if (existingMembership != null && !existingMembership.IsDeleted)
+            if (existingMembership != null && !existingMembership.IsDeleted && existingMembership.EndDate >= DateTime.UtcNow.AddHours(3))
             {
                 await membershipRules.AlreadyMembership(existingMembership);
             }
@@ -56,6 +56,12 @@ namespace FinanceApp.Application.Features.Handlers.MembershipHandlers
                     await unitOfWork.SaveAsync();               
             }
 
+            else if (existingMembership != null && !existingMembership.IsDeleted && existingMembership.EndDate <= DateTime.UtcNow.AddHours(3))
+            {
+                await unitOfWork.GetWriteRepository<Memberships>().HardDeleteAsync(existingMembership);
+                await unitOfWork.SaveAsync();
+            }
+
             var plan = await unitOfWork.GetReadRepository<SubscriptionPlan>().GetAsync(x => x.DigitalPlatformId == request.DigitalPlatformId
                 && x.PlanType == request.SubscriptionType);
 
@@ -65,7 +71,6 @@ namespace FinanceApp.Application.Features.Handlers.MembershipHandlers
             if (card.Balance < plan.Price)
                 throw new Exception("Yetersiz bakiye.");
 
-            // Ödeme ön hazırlık
             card.Balance -= plan.Price;
 
             var now = DateTime.UtcNow.AddHours(3);

@@ -29,6 +29,8 @@ namespace FinanceApp.Application.AutoMapper
              .ForMember(dest => dest.SubscriptionPlanName, opt => opt.MapFrom(src => src.SubscriptionPlan.PlanType))
              .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
              .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate))
+             .ForMember(dest => dest.ImagePath, opt => opt.MapFrom(src => src.SubscriptionPlan.DigitalPlatform.ImagePath))
+             .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))
              .ReverseMap();
 
             CreateMap<GetAllCreditCardsByUserQueryResult, CreditCard>()

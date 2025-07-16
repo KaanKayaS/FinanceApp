@@ -10,6 +10,7 @@ namespace FinanceApp.Domain.Entities
     public class DigitalPlatform : EntityBase
     {
         public string Name { get; set; }
+        public string? ImagePath { get; set; }
         public ICollection<SubscriptionPlan> SubscriptionPlans { get; set; }
         public ICollection<Memberships> Memberships { get; set; }
     }

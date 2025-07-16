@@ -20,4 +20,8 @@
     <ProjectReference Include="..\..\Infrastructure\FinanceApp.Persistence\FinanceApp.Persistence.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\images\platforms\" />
+  </ItemGroup>
+
 </Project>

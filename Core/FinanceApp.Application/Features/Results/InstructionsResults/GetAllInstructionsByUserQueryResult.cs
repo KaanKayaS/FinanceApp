@@ -9,6 +9,7 @@ namespace FinanceApp.Application.Features.Results.InstructionsResults
 {
     public class GetAllInstructionsByUserQueryResult
     {
+        public int Id { get; set; }
         public string Title { get; set; }
         public decimal Amount { get; set; }
         public DateTime ScheduledDate { get; set; }

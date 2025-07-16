@@ -1,4 +1,5 @@
-﻿using FinanceApp.Application.Features.Queries.DigitalPlatformQueries;
+﻿using FinanceApp.Application.Features.Commands.DigitalPlatformCommands;
+using FinanceApp.Application.Features.Queries.DigitalPlatformQueries;
 using FinanceApp.Application.Features.Queries.MembershipsQueries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -23,6 +24,20 @@ namespace FinanceApp.Api.Controllers
         {
             var values = await mediator.Send(new GetAllDigitalPlatfomQuery());
             return Ok(values);
+        }
+
+        [HttpPost("{id}/upload-image")]
+        public async Task<IActionResult> UploadImage(int id, IFormFile file)
+        {
+            var command = new UploadPlatformImageCommand
+            {
+                PlatformId = id,
+                File = file
+            };
+
+            await mediator.Send(command);
+
+            return Ok();
         }
     }
 }

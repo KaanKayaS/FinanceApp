@@ -10,8 +10,10 @@ namespace FinanceApp.Application.Features.Results.MembershipResult
     public class GetAllMembershipsByUserQueryResult
     {
         public string DigitalPlatformName { get; set; }
+        public string ImagePath { get; set; }
         public string SubscriptionPlanName { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

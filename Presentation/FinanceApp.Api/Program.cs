@@ -15,6 +15,7 @@ builder.Services.AddSwaggerGen();
 
 var env = builder.Environment;
 
+
 builder.Configuration
     .SetBasePath(env.ContentRootPath)
     .AddJsonFile("appsettings.json", optional: false)
@@ -85,6 +86,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseStaticFiles();
 app.UseHttpsRedirection();
 app.UseCors("AllowAngularApp");
 

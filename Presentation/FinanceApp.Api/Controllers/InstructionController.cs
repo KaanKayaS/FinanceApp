@@ -56,5 +56,12 @@ namespace FinanceApp.Api.Controllers
             var values = await mediator.Send(new GetAllInstructionsByUserQuery());
             return Ok(values);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetInstructionCount()
+        {
+            var values = await mediator.Send(new GetInstructionCountByUserQuery());
+            return Ok(values);
+        }
     }
 }

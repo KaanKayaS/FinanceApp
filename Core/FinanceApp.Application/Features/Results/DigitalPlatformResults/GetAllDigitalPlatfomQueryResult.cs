@@ -11,5 +11,6 @@ namespace FinanceApp.Application.Features.Results.DigitalPlatformResults
         public int Id { get; set; }
         public string Name { get; set; }
         public DateTime CreatedDate { get; set; }
+        public string ImagePath { get; set; }
     }
 }

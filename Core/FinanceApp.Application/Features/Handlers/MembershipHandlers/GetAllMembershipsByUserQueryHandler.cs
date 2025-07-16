@@ -32,7 +32,8 @@ namespace FinanceApp.Application.Features.Handlers.MembershipHandlers
             string? userIdString = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             int userId = await authRules.GetValidatedUserId(userIdString);
 
-            var values = await unitOfWork.GetReadRepository<Memberships>().GetAllAsync(x => x.UserId == userId && x.IsDeleted == false, include: x => x
+            var values = await unitOfWork.GetReadRepository<Memberships>().GetAllAsync(x => x.UserId == userId && x.EndDate >= DateTime.UtcNow.AddHours(3)
+                                                                                       , include: x => x
                                                                                          .Include(x => x.SubscriptionPlan)
                                                                                          .ThenInclude(x => x.DigitalPlatform));
                                                                                 
