@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
 using FinanceApp.Application.Bases;
+using FinanceApp.Application.Features.Handlers.CreditCardHandler;
 using FinanceApp.Application.Features.Queries.InstructionQueries;
 using FinanceApp.Application.Features.Results.InstructionsResults;
 using FinanceApp.Application.Features.Rules;
+using FinanceApp.Application.Interfaces.Services;
 using FinanceApp.Application.Interfaces.UnitOfWorks;
 using FinanceApp.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,11 +22,14 @@ namespace FinanceApp.Application.Features.Handlers.InstructionsHandlers
     public class GetInstructionCountByUserQueryHandler : BaseHandler, IRequestHandler<GetInstructionCountByUserQuery, GetInstructionCountByUserQueryResult>
     {
         private readonly AuthRules authRules;
+        private readonly IInstructionService instructionService;
+        private readonly IInstructionService ınstructionService;
 
-        public GetInstructionCountByUserQueryHandler(IMapper mapper, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor,
-            AuthRules authRules) : base(mapper, unitOfWork, httpContextAccessor)
+        public GetInstructionCountByUserQueryHandler(IMapper mapper, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, ILogger<AddBalanceCreditCardCommandHandler> logger,
+            AuthRules authRules, IInstructionService instructionService) : base(mapper, unitOfWork, httpContextAccessor, logger)
         {
             this.authRules = authRules;
+            this.instructionService = instructionService;
         }
 
         public async Task<GetInstructionCountByUserQueryResult> Handle(GetInstructionCountByUserQuery request, CancellationToken cancellationToken)
@@ -31,24 +37,7 @@ namespace FinanceApp.Application.Features.Handlers.InstructionsHandlers
 
             int userId = await authRules.GetValidatedUserId(httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-            int totalInstruction = await unitOfWork.GetReadRepository<Instructions>().CountAsync(x => x.UserId == userId);
-
-            int waitingInstruction = await unitOfWork.GetReadRepository<Instructions>().CountAsync(x => x.IsPaid == false && x.UserId == userId);
-
-            int paidInstruction = await unitOfWork.GetReadRepository<Instructions>().CountAsync(x => x.IsPaid == true && x.UserId == userId);
-
-            var instructions = await unitOfWork.GetReadRepository<Instructions>().GetAllAsync(x => x.IsPaid == false && x.UserId == userId);
-            decimal totalAmount = instructions.Sum(x => x.Amount);
-
-            var result = new GetInstructionCountByUserQueryResult
-            {
-                TotalInstruction = totalInstruction,
-                WaitingInstruction = waitingInstruction,
-                PaidInstruction = paidInstruction,
-                TotalAmount = totalAmount
-            };
-
-            return result;
+            return await instructionService.GetInstructionSummaryByUserIdAsync(userId);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using FinanceApp.Application.Features.Commands.RevokeCommands;
+using FinanceApp.Application.Interfaces.Services;
 using FinanceApp.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -13,21 +14,15 @@ namespace FinanceApp.Application.Features.Handlers.RevokeHandlers
 {
     public class RevokeAllCommandHandler : IRequestHandler<RevokeAllCommand, Unit>
     {
-        private readonly UserManager<User> userManager;
+        private readonly IAuthService authService;
 
-        public RevokeAllCommandHandler(UserManager<User> userManager)
+        public RevokeAllCommandHandler(IAuthService authService)
         {
-            this.userManager = userManager;
+            this.authService = authService;
         }
         public async Task<Unit> Handle(RevokeAllCommand request, CancellationToken cancellationToken)
         {
-            var users = await userManager.Users.ToListAsync(cancellationToken);
-
-            foreach (var user in users) 
-            {
-                user.RefreshToken = null;
-                await userManager.UpdateAsync(user);
-            }
+            await authService.RevokeAllRefreshTokensAsync();
 
             return Unit.Value;
         }

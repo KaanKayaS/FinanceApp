@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
 using FinanceApp.Application.Bases;
 using FinanceApp.Application.Features.Commands.ExpenseCommands;
+using FinanceApp.Application.Features.Handlers.CreditCardHandler;
 using FinanceApp.Application.Features.Rules;
+using FinanceApp.Application.Interfaces.Services;
 using FinanceApp.Application.Interfaces.UnitOfWorks;
 using FinanceApp.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,28 +21,20 @@ namespace FinanceApp.Application.Features.Handlers.ExpenseHandlers
     public class RemoveExpenseCommandHandler : BaseHandler, IRequestHandler<RemoveExpenseCommand, Unit>
     {
         private readonly AuthRules authRules;
-        private readonly ExpenseRules expenseRules;
+        private readonly IExpenseService expenseService;
 
-        public RemoveExpenseCommandHandler(IMapper mapper, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor,
-            AuthRules authRules, ExpenseRules expenseRules) : base(mapper, unitOfWork, httpContextAccessor)
+        public RemoveExpenseCommandHandler(IMapper mapper, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, ILogger<AddBalanceCreditCardCommandHandler> logger,
+            AuthRules authRules, IExpenseService expenseService) : base(mapper, unitOfWork, httpContextAccessor ,logger)
         {
             this.authRules = authRules;
-            this.expenseRules = expenseRules;
+            this.expenseService = expenseService;
         }
 
         public async Task<Unit> Handle(RemoveExpenseCommand request, CancellationToken cancellationToken)
         {
-            string? userIdString = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            int userId = await authRules.GetValidatedUserId(userIdString);
+            int userId = await authRules.GetValidatedUserId(httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-            Expens expens = await unitOfWork.GetReadRepository<Expens>().GetAsync(x => x.Id == request.Id);
-            await expenseRules.ExpensNotFound(expens);
-            await expenseRules.IsThisYourExpense(expens, userId);
-
-            await unitOfWork.GetWriteRepository<Expens>().HardDeleteAsync(expens);
-
-            await unitOfWork.SaveAsync();
-
+            await expenseService.RemoveExpenseAsync(request.Id, userId);
             return Unit.Value;
         }
     }

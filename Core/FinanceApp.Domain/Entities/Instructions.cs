@@ -14,7 +14,8 @@ namespace FinanceApp.Domain.Entities
         public decimal Amount { get; set; } 
         public DateTime ScheduledDate { get; set; } 
         public bool IsPaid { get; set; } 
-        public string? Description { get; set; } 
+        public string? Description { get; set; }
+        public Guid? GroupId { get; set; } 
         public User User { get; set; }
     }
 }

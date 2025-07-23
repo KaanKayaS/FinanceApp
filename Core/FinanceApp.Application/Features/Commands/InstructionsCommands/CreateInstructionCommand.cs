@@ -13,5 +13,7 @@ namespace FinanceApp.Application.Features.Commands.InstructionsCommands
         public decimal Amount { get; set; }
         public DateTime ScheduledDate { get; set; }
         public string? Description { get; set; }
+        public bool MonthlyInstruction { get; set; } = false;
+        public int? InstructionTime { get; set; }
     }
 }

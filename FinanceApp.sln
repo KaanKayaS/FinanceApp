@@ -9,15 +9,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{1B99A9E2-6969-42E4-AA56-26537FD6FCF6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinanceApp.Application", "Core\FinanceApp.Application\FinanceApp.Application.csproj", "{3C134FB6-BD08-4C79-822C-C22BCA10771A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FinanceApp.Application", "Core\FinanceApp.Application\FinanceApp.Application.csproj", "{3C134FB6-BD08-4C79-822C-C22BCA10771A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinanceApp.Domain", "Core\FinanceApp.Domain\FinanceApp.Domain.csproj", "{1E77794C-146A-4083-9944-F7B4ED46554C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FinanceApp.Domain", "Core\FinanceApp.Domain\FinanceApp.Domain.csproj", "{1E77794C-146A-4083-9944-F7B4ED46554C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinanceApp.Persistence", "Infrastructure\FinanceApp.Persistence\FinanceApp.Persistence.csproj", "{77FC4A35-FAB6-4846-908C-A04B7FE530CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FinanceApp.Persistence", "Infrastructure\FinanceApp.Persistence\FinanceApp.Persistence.csproj", "{77FC4A35-FAB6-4846-908C-A04B7FE530CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinanceApp.Infrastructure", "Infrastructure\FinanceApp.Infrastructure\FinanceApp.Infrastructure.csproj", "{1E9FD73F-ED0A-4FDA-8D7D-658971C5993A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FinanceApp.Infrastructure", "Infrastructure\FinanceApp.Infrastructure\FinanceApp.Infrastructure.csproj", "{1E9FD73F-ED0A-4FDA-8D7D-658971C5993A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinanceApp.Api", "Presentation\FinanceApp.Api\FinanceApp.Api.csproj", "{8FFA9DF2-3F96-4CA7-BB77-A63879E29A52}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FinanceApp.Api", "Presentation\FinanceApp.Api\FinanceApp.Api.csproj", "{8FFA9DF2-3F96-4CA7-BB77-A63879E29A52}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FinanceApp.Tests", "FinanceApp.Tests\FinanceApp.Tests.csproj", "{81098839-0EF2-4CC3-84BA-8F33BCF2EDEA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{8FFA9DF2-3F96-4CA7-BB77-A63879E29A52}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8FFA9DF2-3F96-4CA7-BB77-A63879E29A52}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8FFA9DF2-3F96-4CA7-BB77-A63879E29A52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81098839-0EF2-4CC3-84BA-8F33BCF2EDEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81098839-0EF2-4CC3-84BA-8F33BCF2EDEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81098839-0EF2-4CC3-84BA-8F33BCF2EDEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81098839-0EF2-4CC3-84BA-8F33BCF2EDEA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

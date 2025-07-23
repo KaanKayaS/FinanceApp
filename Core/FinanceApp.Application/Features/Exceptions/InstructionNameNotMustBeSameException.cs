@@ -9,6 +9,6 @@ namespace FinanceApp.Application.Features.Exceptions
 {
     public class InstructionNameNotMustBeSameException : BaseException
     {
-        public InstructionNameNotMustBeSameException(): base("Bu isimde bir talimatınız zaten var.") { }
+        public InstructionNameNotMustBeSameException(): base("Bu tarihte aynı isimde bir talimatınız zaten var.") { }
     }
 }

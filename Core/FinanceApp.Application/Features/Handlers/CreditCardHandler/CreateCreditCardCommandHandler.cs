@@ -2,10 +2,12 @@
 using FinanceApp.Application.Bases;
 using FinanceApp.Application.Features.Commands.CreditCardCommands;
 using FinanceApp.Application.Features.Rules;
+using FinanceApp.Application.Interfaces.Services;
 using FinanceApp.Application.Interfaces.UnitOfWorks;
 using FinanceApp.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,34 +20,21 @@ namespace FinanceApp.Application.Features.Handlers.CreditCardHandler
     public class CreateCreditCardCommandHandler : BaseHandler, IRequestHandler<CreateCreditCardCommand, Unit>
     {
         private readonly AuthRules authRules;
-        private readonly CreditCardRules creditCardRules;
-        public CreateCreditCardCommandHandler(IMapper mapper, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor
-            ,AuthRules authRules, CreditCardRules creditCardRules) : base(mapper, unitOfWork, httpContextAccessor)
+        private readonly ICreditCardService creditCardService;
+
+        public CreateCreditCardCommandHandler(IMapper mapper, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, ILogger<AddBalanceCreditCardCommandHandler> logger
+            , AuthRules authRules,ICreditCardService creditCardService) : base(mapper, unitOfWork, httpContextAccessor , logger)
         {
             this.authRules = authRules;
-            this.creditCardRules = creditCardRules;
+            this.creditCardService = creditCardService;
         }
 
         public async Task<Unit> Handle(CreateCreditCardCommand request, CancellationToken cancellationToken)
         {
-            string? userIdString = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            int userId = await authRules.GetValidatedUserId(userIdString);
+            int userId = await authRules.GetValidatedUserId(httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-            IList<CreditCard> Cards = await unitOfWork.GetReadRepository<CreditCard>().GetAllAsync();
-            await creditCardRules.CreditCardNoNotBeSame(Cards, request.CardNo);
-
-            await unitOfWork.GetWriteRepository<CreditCard>().AddAsync(new CreditCard
-            {
-                CardNo = request.CardNo,
-                UserId = userId,
-                ValidDate = request.ValidDate,
-                Cvv = request.Cvv,
-                NameOnCard = request.NameOnCard,
-                Balance = 2000.00m,
-            });
-
-            await unitOfWork.SaveAsync();
-
+            await creditCardService.CreateAsync(request, userId);
+            
             return Unit.Value;
         }
     }

@@ -31,7 +31,7 @@ namespace FinanceApp.Application.Features.Rules
             return Task.CompletedTask;
         }
 
-        public Task<int> GetValidatedUserId(string stringuserId)
+        public virtual Task<int> GetValidatedUserId(string stringuserId)
         {
             if (!int.TryParse(stringuserId, out int userId)) throw new GetValidatedUserIdException();
             return Task.FromResult(userId);

@@ -33,6 +33,7 @@ namespace FinanceApp.Persistence.Context
         public DbSet<Menu> Menus { get; set; }
         public DbSet<Instructions> Instructions { get; set; }
         public DbSet<BalanceMemory> BalanceMemories { get; set; }
+        public DbSet<AuditLog> AuditLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -91,6 +92,22 @@ namespace FinanceApp.Persistence.Context
             modelBuilder.Entity<SubscriptionPlan>()
                 .Property(sp => sp.Price)
                 .HasColumnType("decimal(18,2)");  
+
+            // AuditLog — User ilişkisi (opsiyonel)
+            modelBuilder.Entity<AuditLog>()
+                .HasOne(a => a.User)
+                .WithMany(u => u.AuditLogs)
+                .HasForeignKey(a => a.UserId)
+                .OnDelete(DeleteBehavior.SetNull); // User silinirse audit log'da UserId null olacak
+
+            // AuditLog için metin alanları konfigürasyonu
+            modelBuilder.Entity<AuditLog>()
+                .Property(a => a.RequestData)
+                .HasColumnType("nvarchar(max)");
+
+            modelBuilder.Entity<AuditLog>()
+                .Property(a => a.ResponseData)
+                .HasColumnType("nvarchar(max)");
 
         }
     }

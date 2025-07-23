@@ -3,6 +3,15 @@ using FinanceApp.Application;
 using FinanceApp.Infrastructure;
 using FinanceApp.Application.Exceptions;
 using FinanceApp.Persistence.Data;
+using Serilog;
+using Serilog.Core;
+using Serilog.Sinks.MSSqlServer;
+using System.Collections.ObjectModel;
+using System.Data;
+using Microsoft.AspNetCore.HttpLogging;
+using Serilog.Events;
+using Azure.Core;
+using Serilog.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,12 +42,13 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAngularApp",
         builder =>
         {
-            builder.WithOrigins("http://localhost:4200")  // Angular uygulamanýzýn URL'i
+            builder.WithOrigins("http://localhost:4200")  // Angular uygulamamÄ±zÄ±n URL'i
                    .AllowAnyMethod()
                    .AllowAnyHeader()
                    .AllowCredentials();
         });
 });
+
 
 
 builder.Services.AddSwaggerGen(options =>
@@ -68,10 +78,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 
-
-
 var app = builder.Build();
-
 
 using (var scope = app.Services.CreateScope())
 {
@@ -87,11 +94,15 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles();
+
 app.UseHttpsRedirection();
 app.UseCors("AllowAngularApp");
 
+
+app.UseAuthentication();
+app.UseAuthorization(); 
+
 app.ConfigureExceptionHandlingMiddleware();
-app.UseAuthorization();
 
 app.MapControllers();
 

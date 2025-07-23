@@ -3,6 +3,7 @@ using FinanceApp.Application.Beheviors;
 using FinanceApp.Application.Exceptions;
 using FinanceApp.Application.Features.Rules;
 using FinanceApp.Application.Features.Validator;
+using FinanceApp.Application.Interfaces.Services;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Configuration;
@@ -28,6 +29,7 @@ namespace FinanceApp.Application
             ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("tr");
 
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(FluentValidationBehavior<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehavior<,>));
 
             services.AddTransient<ExceptionMiddleware>();
             services.AddTransient<AuthRules>();
@@ -37,6 +39,7 @@ namespace FinanceApp.Application
             services.AddTransient<SubscriptionPlanRules>();
             services.AddTransient<ExpenseRules>();
             services.AddTransient<InstructionRules>();
+
 
 
         }

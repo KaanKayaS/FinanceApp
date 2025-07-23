@@ -11,7 +11,7 @@ namespace FinanceApp.Application.Features.Rules
 {
     public class CreditCardRules : BaseRules
     {
-        public Task CreditCardNoNotBeSame(IList<CreditCard> creditCards, string cardNo)
+        public virtual Task CreditCardNoNotBeSame(IList<CreditCard> creditCards, string cardNo)
         {
 
             foreach (var creditCard in creditCards) 
@@ -22,13 +22,13 @@ namespace FinanceApp.Application.Features.Rules
             return Task.CompletedTask;
         }
 
-        public Task CreditCardNoNotFound(CreditCard creditCard)
-        {
+        public virtual Task CreditCardNoNotFound(CreditCard creditCard)
+            {
             if (creditCard == null) throw new CreditCardNotFoundException();
             return Task.CompletedTask;
         }
 
-        public Task DoesThisCardBelongToYou(CreditCard creditCard, int userId)
+        public virtual Task DoesThisCardBelongToYou(CreditCard creditCard, int userId)
         {
             if (creditCard.UserId != userId) throw new DoesThisCardBelongToYouException();
             return Task.CompletedTask;

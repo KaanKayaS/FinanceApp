@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
 using FinanceApp.Application.Bases;
 using FinanceApp.Application.Features.Commands.InstructionsCommands;
+using FinanceApp.Application.Features.Handlers.CreditCardHandler;
 using FinanceApp.Application.Features.Rules;
+using FinanceApp.Application.Interfaces.Services;
 using FinanceApp.Application.Interfaces.UnitOfWorks;
 using FinanceApp.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,30 +21,20 @@ namespace FinanceApp.Application.Features.Handlers.InstructionsHandlers
     public class SetPaidTrueInstructionCommandHandler : BaseHandler, IRequestHandler<SetPaidTrueInstructionCommand, bool>
     {
         private readonly AuthRules authRules;
-        private readonly InstructionRules instructionRules;
+        private readonly IInstructionService instructionService;
 
-        public SetPaidTrueInstructionCommandHandler(IMapper mapper, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor,
-            AuthRules authRules, InstructionRules instructionRules) : base(mapper, unitOfWork, httpContextAccessor)
+        public SetPaidTrueInstructionCommandHandler(IMapper mapper, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, ILogger<AddBalanceCreditCardCommandHandler> logger,
+            AuthRules authRules, IInstructionService instructionService) : base(mapper, unitOfWork, httpContextAccessor, logger)
         {
             this.authRules = authRules;
-            this.instructionRules = instructionRules;
+            this.instructionService = instructionService;
         }
 
         public async Task<bool> Handle(SetPaidTrueInstructionCommand request, CancellationToken cancellationToken)
         {
             int userId = await authRules.GetValidatedUserId(httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-            Instructions instructions = await unitOfWork.GetReadRepository<Instructions>().GetAsync(x => x.Id == request.Id);
-            await instructionRules.InstructionsNotFound(instructions);
-            await instructionRules.IsThisYourInstruction(instructions, userId);
-
-            instructions.IsPaid = true;
-            
-            await unitOfWork.GetWriteRepository<Instructions>().UpdateAsync(instructions);
-
-            await unitOfWork.SaveAsync();
-
-            return instructions.IsPaid;
+            return await instructionService.SetInstructionPaidTrueAsync(request.Id, userId);
         }
     }
 }

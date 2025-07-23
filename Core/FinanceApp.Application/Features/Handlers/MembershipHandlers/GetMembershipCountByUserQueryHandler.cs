@@ -1,13 +1,16 @@
 ﻿using AutoMapper;
 using FinanceApp.Application.Bases;
+using FinanceApp.Application.Features.Handlers.CreditCardHandler;
 using FinanceApp.Application.Features.Queries.MembershipsQueries;
 using FinanceApp.Application.Features.Results.MembershipResult;
 using FinanceApp.Application.Features.Rules;
+using FinanceApp.Application.Interfaces.Services;
 using FinanceApp.Application.Interfaces.UnitOfWorks;
 using FinanceApp.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,21 +23,20 @@ namespace FinanceApp.Application.Features.Handlers.MembershipHandlers
     public class GetMembershipCountByUserQueryHandler : BaseHandler, IRequestHandler<GetMembershipCountByUserQuery, int>
     {
         private readonly AuthRules authRules;
+        private readonly IMembershipService membershipService;
 
-        public GetMembershipCountByUserQueryHandler(IMapper mapper, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor,
-            AuthRules authRules) : base(mapper, unitOfWork, httpContextAccessor)
+        public GetMembershipCountByUserQueryHandler(IMapper mapper, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, ILogger<AddBalanceCreditCardCommandHandler> logger,
+            AuthRules authRules, IMembershipService membershipService) : base(mapper, unitOfWork, httpContextAccessor, logger)
         {
             this.authRules = authRules;
+            this.membershipService = membershipService;
         }
 
         public async Task<int> Handle(GetMembershipCountByUserQuery request, CancellationToken cancellationToken)
         {
-            string? userIdString = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            int userId = await authRules.GetValidatedUserId(userIdString);
+            int userId = await authRules.GetValidatedUserId(httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-            int count = await unitOfWork.GetReadRepository<Memberships>().CountAsync(x => x.UserId == userId && x.IsDeleted == false);
-
-            return count;
+            return await membershipService.GetMembershipCountByUserAsync(userId);
         }
     }
 }

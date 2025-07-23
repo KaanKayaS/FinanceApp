@@ -40,7 +40,7 @@ namespace FinanceApp.Api.Controllers
             };
 
             await mediator.Send(command);
-            return StatusCode(StatusCodes.Status200OK, "Kredi kartınıza bakiye başarıyla yüklendi.");
+            return Ok(new { message = "Kredi kartınıza bakiye başarıyla yüklendi.", success = true });
         }
 
         [HttpDelete]

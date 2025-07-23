@@ -15,5 +15,6 @@ namespace FinanceApp.Application.Features.Results.InstructionsResults
         public DateTime ScheduledDate { get; set; }
         public bool IsPaid { get; set; }
         public string? Description { get; set; }
+        public Guid? GroupId { get; set; }
     }
 }

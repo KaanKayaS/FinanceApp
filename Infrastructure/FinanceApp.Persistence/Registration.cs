@@ -1,8 +1,10 @@
 ﻿using FinanceApp.Application.Interfaces.Repositories;
+using FinanceApp.Application.Interfaces.Services;
 using FinanceApp.Application.Interfaces.UnitOfWorks;
 using FinanceApp.Domain.Entities;
 using FinanceApp.Persistence.Context;
 using FinanceApp.Persistence.Repositories;
+using FinanceApp.Persistence.Services;
 using FinanceApp.Persistence.UnitOfWorks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -39,6 +41,18 @@ namespace FinanceApp.Persistence
             })
                 .AddRoles<Role>()
                 .AddEntityFrameworkStores<AppDbContext>();
+
+            services.AddScoped<IInstructionService, InstructionService>();
+            services.AddScoped<ICreditCardService, CreditCardService>();
+            services.AddScoped<IDigitalPlatformService, DigitalPlatformService>();
+            services.AddScoped<IExpenseService, ExpenseService>();
+            services.AddScoped<IMembershipService, MembershipService>();
+            services.AddScoped<IMenuService, MenuService>();
+            services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IAuditLogService, AuditLogService>();
+
         }
     }
 }

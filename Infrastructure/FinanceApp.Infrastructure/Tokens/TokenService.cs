@@ -28,6 +28,7 @@ namespace FinanceApp.Infrastructure.Tokens
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),  //jwt id
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),   // user id
                 new Claim(JwtRegisteredClaimNames.Email, user.Email) ,       //user email
+                new Claim(ClaimTypes.Name, user.FullName),                   
             };
 
             foreach (var role in roles)

@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
 using FinanceApp.Application.Bases;
 using FinanceApp.Application.Features.Commands.ExpenseCommands;
+using FinanceApp.Application.Features.Handlers.CreditCardHandler;
 using FinanceApp.Application.Features.Rules;
+using FinanceApp.Application.Interfaces.Services;
 using FinanceApp.Application.Interfaces.UnitOfWorks;
 using FinanceApp.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,31 +20,21 @@ namespace FinanceApp.Application.Features.Handlers.ExpenseHandlers
 {
     public class UpdateExpenseCommandHandler : BaseHandler, IRequestHandler<UpdateExpenseCommand, Unit>
     {
-        private readonly ExpenseRules expenseRules;
+        private readonly IExpenseService expenseService;
         private readonly AuthRules authRules;
 
-        public UpdateExpenseCommandHandler(IMapper mapper, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor,
-            ExpenseRules expenseRules, AuthRules authRules) : base(mapper, unitOfWork, httpContextAccessor)
+        public UpdateExpenseCommandHandler(IMapper mapper, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, ILogger<AddBalanceCreditCardCommandHandler> logger,
+            IExpenseService expenseService, AuthRules authRules) : base(mapper, unitOfWork, httpContextAccessor, logger)
         {
-            this.expenseRules = expenseRules;
+            this.expenseService = expenseService;
             this.authRules = authRules;
         }
 
         public async Task<Unit> Handle(UpdateExpenseCommand request, CancellationToken cancellationToken)
-        {      
-            string? userIdString = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            int userId = await authRules.GetValidatedUserId(userIdString);
+        {
+            int userId = await authRules.GetValidatedUserId(httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-            Expens expens = await unitOfWork.GetReadRepository<Expens>().GetAsync(x => x.Id == request.Id);
-            await expenseRules.ExpensNotFound(expens);
-            await expenseRules.IsThisYourExpense(expens, userId);
-
-            expens.Name = request.Name;
-            expens.Amount = request.Amount;
-
-            await unitOfWork.GetWriteRepository<Expens>().UpdateAsync(expens);
-
-            await unitOfWork.SaveAsync();
+            await expenseService.UpdateExpenseAsync(request.Id, request.Name, request.Amount, userId);
             return Unit.Value;
         }
     }

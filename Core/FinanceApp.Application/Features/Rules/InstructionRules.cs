@@ -11,18 +11,21 @@ namespace FinanceApp.Application.Features.Rules
 {
     public class InstructionRules : BaseRules
     {
-        public Task InstructionNameNotMustBeSame(IList<Instructions> instructions, string title)
+        public virtual Task InstructionNameNotMustBeSame(IList<Instructions> instructions, string title, DateTime scheduledDate)
         {
             foreach (var instruction in instructions)
             {
-                if (instruction.Title.Equals(title, StringComparison.OrdinalIgnoreCase))
+                var instructionDate = instruction.CreatedDate.Date;
+                var today = DateTime.UtcNow.Date;
+
+                if (instruction.Title.Equals(title, StringComparison.OrdinalIgnoreCase) && instruction.ScheduledDate.Date == scheduledDate.Date)
                     throw new InstructionNameNotMustBeSameException();
 
             }
             return Task.CompletedTask;
         }
 
-        public Task InstructionsNotFound(Instructions instructions)
+        public virtual Task InstructionsNotFound(Instructions instructions)
         {
         
             if (instructions == null)
@@ -31,7 +34,7 @@ namespace FinanceApp.Application.Features.Rules
             return Task.CompletedTask;
         }
 
-        public Task IsThisYourInstruction(Instructions instructions, int userId)
+        public virtual Task IsThisYourInstruction(Instructions instructions, int userId)
         {
 
             if (instructions.UserId != userId)

@@ -22,6 +22,63 @@ namespace FinanceApp.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("FinanceApp.Domain.Entities.AuditLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ActionName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DurationMs")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ExecutedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("IpAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("RequestData")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResponseData")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Success")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserAgent")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AuditLogs");
+                });
+
             modelBuilder.Entity("FinanceApp.Domain.Entities.BalanceMemory", b =>
                 {
                     b.Property<int>("Id")
@@ -125,63 +182,63 @@ namespace FinanceApp.Persistence.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2025, 7, 16, 13, 1, 27, 984, DateTimeKind.Local).AddTicks(5495),
+                            CreatedDate = new DateTime(2025, 7, 22, 14, 34, 30, 932, DateTimeKind.Local).AddTicks(4263),
                             IsDeleted = false,
                             Name = "Netflix"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2025, 7, 16, 13, 1, 27, 984, DateTimeKind.Local).AddTicks(5507),
+                            CreatedDate = new DateTime(2025, 7, 22, 14, 34, 30, 932, DateTimeKind.Local).AddTicks(4277),
                             IsDeleted = false,
                             Name = "Amazon Prime Video"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2025, 7, 16, 13, 1, 27, 984, DateTimeKind.Local).AddTicks(5508),
+                            CreatedDate = new DateTime(2025, 7, 22, 14, 34, 30, 932, DateTimeKind.Local).AddTicks(4278),
                             IsDeleted = false,
                             Name = "Youtube Premium"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedDate = new DateTime(2025, 7, 16, 13, 1, 27, 984, DateTimeKind.Local).AddTicks(5509),
+                            CreatedDate = new DateTime(2025, 7, 22, 14, 34, 30, 932, DateTimeKind.Local).AddTicks(4279),
                             IsDeleted = false,
                             Name = "TOD"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedDate = new DateTime(2025, 7, 16, 13, 1, 27, 984, DateTimeKind.Local).AddTicks(5511),
+                            CreatedDate = new DateTime(2025, 7, 22, 14, 34, 30, 932, DateTimeKind.Local).AddTicks(4281),
                             IsDeleted = false,
                             Name = "Disney Plus"
                         },
                         new
                         {
                             Id = 6,
-                            CreatedDate = new DateTime(2025, 7, 16, 13, 1, 27, 984, DateTimeKind.Local).AddTicks(5513),
+                            CreatedDate = new DateTime(2025, 7, 22, 14, 34, 30, 932, DateTimeKind.Local).AddTicks(4282),
                             IsDeleted = false,
                             Name = "HBO"
                         },
                         new
                         {
                             Id = 7,
-                            CreatedDate = new DateTime(2025, 7, 16, 13, 1, 27, 984, DateTimeKind.Local).AddTicks(5514),
+                            CreatedDate = new DateTime(2025, 7, 22, 14, 34, 30, 932, DateTimeKind.Local).AddTicks(4283),
                             IsDeleted = false,
                             Name = "Spotify"
                         },
                         new
                         {
                             Id = 8,
-                            CreatedDate = new DateTime(2025, 7, 16, 13, 1, 27, 984, DateTimeKind.Local).AddTicks(5515),
+                            CreatedDate = new DateTime(2025, 7, 22, 14, 34, 30, 932, DateTimeKind.Local).AddTicks(4284),
                             IsDeleted = false,
                             Name = "LinkedIn"
                         },
                         new
                         {
                             Id = 9,
-                            CreatedDate = new DateTime(2025, 7, 16, 13, 1, 27, 984, DateTimeKind.Local).AddTicks(5517),
+                            CreatedDate = new DateTime(2025, 7, 22, 14, 34, 30, 932, DateTimeKind.Local).AddTicks(4328),
                             IsDeleted = false,
                             Name = "EXXEN"
                         });
@@ -234,6 +291,9 @@ namespace FinanceApp.Persistence.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("GroupId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -517,7 +577,7 @@ namespace FinanceApp.Persistence.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2025, 7, 16, 10, 1, 27, 984, DateTimeKind.Utc).AddTicks(7867),
+                            CreatedDate = new DateTime(2025, 7, 22, 11, 34, 30, 932, DateTimeKind.Utc).AddTicks(6567),
                             DigitalPlatformId = 1,
                             IsDeleted = false,
                             PlanType = 1,
@@ -526,7 +586,7 @@ namespace FinanceApp.Persistence.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2025, 7, 16, 10, 1, 27, 984, DateTimeKind.Utc).AddTicks(7873),
+                            CreatedDate = new DateTime(2025, 7, 22, 11, 34, 30, 932, DateTimeKind.Utc).AddTicks(6574),
                             DigitalPlatformId = 1,
                             IsDeleted = false,
                             PlanType = 2,
@@ -535,7 +595,7 @@ namespace FinanceApp.Persistence.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2025, 7, 16, 10, 1, 27, 984, DateTimeKind.Utc).AddTicks(7875),
+                            CreatedDate = new DateTime(2025, 7, 22, 11, 34, 30, 932, DateTimeKind.Utc).AddTicks(6575),
                             DigitalPlatformId = 2,
                             IsDeleted = false,
                             PlanType = 1,
@@ -544,7 +604,7 @@ namespace FinanceApp.Persistence.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedDate = new DateTime(2025, 7, 16, 10, 1, 27, 984, DateTimeKind.Utc).AddTicks(7876),
+                            CreatedDate = new DateTime(2025, 7, 22, 11, 34, 30, 932, DateTimeKind.Utc).AddTicks(6576),
                             DigitalPlatformId = 2,
                             IsDeleted = false,
                             PlanType = 2,
@@ -731,6 +791,16 @@ namespace FinanceApp.Persistence.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("FinanceApp.Domain.Entities.AuditLog", b =>
+                {
+                    b.HasOne("FinanceApp.Domain.Entities.User", "User")
+                        .WithMany("AuditLogs")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FinanceApp.Domain.Entities.BalanceMemory", b =>
@@ -925,6 +995,8 @@ namespace FinanceApp.Persistence.Migrations
 
             modelBuilder.Entity("FinanceApp.Domain.Entities.User", b =>
                 {
+                    b.Navigation("AuditLogs");
+
                     b.Navigation("CreditCards");
 
                     b.Navigation("Expenses");

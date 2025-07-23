@@ -11,7 +11,7 @@ namespace FinanceApp.Application.Features.Rules
 {
     public class SubscriptionPlanRules : BaseRules
     {
-        public Task SubscriptionPlanNotFound(SubscriptionPlan plan)
+        public virtual Task SubscriptionPlanNotFound(SubscriptionPlan plan)
         {
             if (plan == null) throw new SubscriptionPlanNotFoundException();
             return Task.CompletedTask;

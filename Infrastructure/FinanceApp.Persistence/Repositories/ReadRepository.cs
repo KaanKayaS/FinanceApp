@@ -69,7 +69,7 @@ namespace FinanceApp.Persistence.Repositories
                 query = query.Where(predicate);
 
             return await query.CountAsync();
-        }
+         }
 
     }
 }

@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using FinanceApp.Application.Bases;
 using FinanceApp.Application.Features.Commands.LoginCommands;
+using FinanceApp.Application.Features.Handlers.CreditCardHandler;
 using FinanceApp.Application.Features.Results.LoginResults;
 using FinanceApp.Application.Features.Rules;
+using FinanceApp.Application.Interfaces.Services;
 using FinanceApp.Application.Interfaces.Tokens;
 using FinanceApp.Application.Interfaces.UnitOfWorks;
 using FinanceApp.Domain.Entities;
@@ -10,6 +12,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -21,52 +24,17 @@ namespace FinanceApp.Application.Features.Handlers.LoginHandlers
 {
     public class LoginCommandHandler : BaseHandler, IRequestHandler<LoginCommand, LoginCommandResult>
     {
-        private readonly AuthRules authRules;
-        private readonly UserManager<User> userManager;
-        private readonly ITokenService tokenService;
-        private readonly IConfiguration configuration;
+        private readonly IAuthService authService;
 
         public LoginCommandHandler(AuthRules authRules, UserManager<User> userManager,
-            IMapper mapper, IUnitOfWork unitOfWork,
-            IHttpContextAccessor httpContextAccessor, ITokenService tokenService, IConfiguration configuration) : base(mapper, unitOfWork, httpContextAccessor)
+            IMapper mapper, IUnitOfWork unitOfWork, ILogger<AddBalanceCreditCardCommandHandler> logger,
+            IHttpContextAccessor httpContextAccessor, IAuthService authService) : base(mapper, unitOfWork, httpContextAccessor, logger)
         {
-            this.authRules = authRules;
-            this.userManager = userManager;
-            this.tokenService = tokenService;
-            this.configuration = configuration;
+            this.authService = authService;
         }
         public async Task<LoginCommandResult> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
-            User? user = await userManager.FindByEmailAsync(request.Email);
-            bool checkPassword = await userManager.CheckPasswordAsync(user, request.Password);
-
-           
-            await authRules.EmailOrPasswordShouldNotBeInvalid(user, checkPassword);
-
-            var roles = await userManager.GetRolesAsync(user);
-
-            JwtSecurityToken token = await tokenService.CreateToken(user, roles);
-            string refreshToken = tokenService.GenerateRefreshToken();
-
-
-            int.TryParse(configuration["JWT:RefreshTokenValidityInDays"], out int RefreshTokenValidityInDays);
-
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(RefreshTokenValidityInDays);
-
-            await userManager.UpdateAsync(user);
-            await userManager.UpdateSecurityStampAsync(user);
-
-            string _token = new JwtSecurityTokenHandler().WriteToken(token);
-
-            await userManager.SetAuthenticationTokenAsync(user, "Default", "AccessToken", _token);
-
-            return new()
-            {
-                Token = _token,
-                RefreshToken = refreshToken,
-                Expiration = token.ValidTo
-            };
+            return await authService.LoginAsync(request.Email, request.Password);
         }
     }
 }

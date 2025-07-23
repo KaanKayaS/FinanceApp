@@ -11,7 +11,7 @@ namespace FinanceApp.Application.Features.Rules
 {
     public class MembershipRules : BaseRules
     {
-        public Task AlreadyMembership(Memberships membership)
+        public virtual Task AlreadyMembership(Memberships membership)
         {     
             if (membership != null)
                 throw new AlreadyMembershipException();
@@ -19,7 +19,7 @@ namespace FinanceApp.Application.Features.Rules
             return Task.CompletedTask;
         }
 
-        public Task MembershipNotFound(Memberships membership)
+        public virtual Task MembershipNotFound(Memberships membership)
         {
             if (membership == null)
                 throw new MembershipNotFoundException();

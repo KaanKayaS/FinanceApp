@@ -1,5 +1,6 @@
 ﻿using FinanceApp.Application.Features.Commands.RevokeCommands;
 using FinanceApp.Application.Features.Rules;
+using FinanceApp.Application.Interfaces.Services;
 using FinanceApp.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -13,22 +14,15 @@ namespace FinanceApp.Application.Features.Handlers.RevokeHandlers
 {
     public class RevokeCommandHandler : IRequestHandler<RevokeCommand, Unit>
     {
-        private readonly UserManager<User> userManager;
-        private readonly AuthRules authRules;
+        private readonly IAuthService authService;
 
-        public RevokeCommandHandler(UserManager<User> userManager, AuthRules authRules)
+        public RevokeCommandHandler(IAuthService authService)
         {
-            this.userManager = userManager;
-            this.authRules = authRules;
+            this.authService = authService;
         }
         public async Task<Unit> Handle(RevokeCommand request, CancellationToken cancellationToken)
         {
-            User? user = await userManager.FindByEmailAsync(request.Email);
-            await authRules.EmailAddressShouldBeValid(user);
-
-            user.RefreshToken = null;
-            await userManager.UpdateAsync(user);
-
+            await authService.RevokeRefreshTokenAsync(request.Email);
             return Unit.Value;
         }
     }

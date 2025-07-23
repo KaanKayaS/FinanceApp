@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
 using FinanceApp.Application.Bases;
 using FinanceApp.Application.Features.Commands.RegisterCommands;
+using FinanceApp.Application.Features.Handlers.CreditCardHandler;
 using FinanceApp.Application.Features.Rules;
+using FinanceApp.Application.Interfaces.Services;
 using FinanceApp.Application.Interfaces.UnitOfWorks;
 using FinanceApp.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,43 +23,16 @@ namespace FinanceApp.Application.Features.Handlers.RegisterHandlers
         private readonly UserManager<User> userManager;
         private readonly RoleManager<Role> roleManager;
         private readonly AuthRules authRules;
+        private readonly IAuthService authService;
 
-        public RegisterCommandHandler(UserManager<User> userManager,
-            RoleManager<Role> roleManager, IMapper mapper, IUnitOfWork unitOfWork,
-            IHttpContextAccessor httpContextAccessor, AuthRules authRules) : base(mapper, unitOfWork, httpContextAccessor)
+        public RegisterCommandHandler(IMapper mapper, IUnitOfWork unitOfWork,
+            IHttpContextAccessor httpContextAccessor,IAuthService authService, ILogger<AddBalanceCreditCardCommandHandler> logger) : base(mapper, unitOfWork, httpContextAccessor, logger)
         {
-            this.userManager = userManager;
-            this.roleManager = roleManager;
-            this.authRules = authRules;
+            this.authService = authService;
         }
         public async Task<Unit> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
-            User? usertest = await userManager.FindByEmailAsync(request.Email);
-            await authRules.UserShouldNotBeExist(usertest);
-
-            IList<User> userList = await unitOfWork.GetReadRepository<User>().GetAllAsync();
-            await authRules.UserNameMustBeUnique(request.FullName, userList);
-
-            User user = mapper.Map<User>(request);
-
-            user.UserName = request.Email;
-            user.SecurityStamp = Guid.NewGuid().ToString();
-
-            IdentityResult result = await userManager.CreateAsync(user, request.Password);
-
-            if (result.Succeeded) 
-            {
-                if (!await roleManager.RoleExistsAsync("user"))
-                    await roleManager.CreateAsync(new Role
-                    {
-                        Name = "user",
-                        NormalizedName = "USER",
-                        ConcurrencyStamp = Guid.NewGuid().ToString(),
-                    });
-
-                await userManager.AddToRoleAsync(user, "user");
-            }
-
+            await authService.RegisterAsync(request);
             return Unit.Value;
         }
     }

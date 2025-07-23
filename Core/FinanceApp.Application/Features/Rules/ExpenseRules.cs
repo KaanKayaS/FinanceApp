@@ -11,7 +11,7 @@ namespace FinanceApp.Application.Features.Rules
 {
     public class ExpenseRules : BaseRules
     {
-        public Task ExpenseNameNotMustBeSame(IList<Expens> expens, string expenseName)
+        public virtual Task ExpenseNameNotMustBeSame(IList<Expens> expens, string expenseName)
         {
             foreach( var expense in expens ) 
             {
@@ -22,7 +22,7 @@ namespace FinanceApp.Application.Features.Rules
             return Task.CompletedTask;
         }
 
-        public Task IsThisYourExpense(Expens expens, int UserId)
+        public virtual Task IsThisYourExpense(Expens expens, int UserId)
         {
            if (expens.UserId != UserId)
                     throw new IsThisYourExpenseException();
@@ -30,7 +30,7 @@ namespace FinanceApp.Application.Features.Rules
             return Task.CompletedTask;
         }
 
-        public Task ExpensNotFound(Expens expens)
+        public virtual Task ExpensNotFound(Expens expens)
         {
             if (expens == null)
                 throw new ExpensNotFoundException();

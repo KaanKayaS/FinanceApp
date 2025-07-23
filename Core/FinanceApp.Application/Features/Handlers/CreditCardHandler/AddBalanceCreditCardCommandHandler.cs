@@ -2,10 +2,12 @@
 using FinanceApp.Application.Bases;
 using FinanceApp.Application.Features.Commands.CreditCardCommands;
 using FinanceApp.Application.Features.Rules;
+using FinanceApp.Application.Interfaces.Services;
 using FinanceApp.Application.Interfaces.UnitOfWorks;
 using FinanceApp.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,38 +20,23 @@ namespace FinanceApp.Application.Features.Handlers.CreditCardHandler
     public class AddBalanceCreditCardCommandHandler : BaseHandler, IRequestHandler<AddBalanceCreditCardCommand, Unit>
     {
         private readonly AuthRules authRules;
-        private readonly CreditCardRules creditCardRules;
+        private readonly ICreditCardService creditCardService;
+        private readonly ILogger<AddBalanceCreditCardCommandHandler> logger;
 
         public AddBalanceCreditCardCommandHandler(IMapper mapper, IUnitOfWork unitOfWork,IHttpContextAccessor httpContextAccessor
-            , AuthRules authRules,CreditCardRules creditCardRules) : base(mapper, unitOfWork, httpContextAccessor)
+            , AuthRules authRules,ICreditCardService creditCardService, ILogger<AddBalanceCreditCardCommandHandler> logger) : base(mapper, unitOfWork, httpContextAccessor, logger)
         {
             this.authRules = authRules;
-            this.creditCardRules = creditCardRules;
+            this.creditCardService = creditCardService;
+            this.logger = logger;
         }
 
         public async Task<Unit> Handle(AddBalanceCreditCardCommand request, CancellationToken cancellationToken)
         {
-            CreditCard creditCard = await unitOfWork.GetReadRepository<CreditCard>().GetAsync(x => x.Id == request.Id);
-            await creditCardRules.CreditCardNoNotFound(creditCard);
+            int userId = await authRules.GetValidatedUserId(httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
-            string? userIdString = httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            int userId = await authRules.GetValidatedUserId(userIdString);
-
-            await creditCardRules.DoesThisCardBelongToYou(creditCard, userId);
-
-            creditCard.Balance += request.Balance;
-            
-
-            await unitOfWork.GetWriteRepository<CreditCard>().UpdateAsync(creditCard);
-
-            await unitOfWork.GetWriteRepository<BalanceMemory>().AddAsync(new BalanceMemory
-            {
-                Name = "Para Yükleme",
-                Amount = request.Balance,
-                CreditCardId = request.Id,
-            });
-
-            await unitOfWork.SaveAsync();
+            await creditCardService.AddBalanceAsync(request, userId);
+            logger.LogInformation("Bakiye güncellendi");
             return Unit.Value;
         }
     }
