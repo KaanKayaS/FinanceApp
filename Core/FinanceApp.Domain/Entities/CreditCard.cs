@@ -19,5 +19,6 @@ namespace FinanceApp.Domain.Entities
         public User User { get; set; }
         public ICollection<Payment> Payments { get; set; }
         public ICollection<BalanceMemory> BalanceMemories { get; set; }
+        public ICollection<InvestmentPlanPayment> InvestmentPlanPayments { get; set; }
     }
 }

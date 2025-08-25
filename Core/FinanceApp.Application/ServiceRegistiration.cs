@@ -3,6 +3,7 @@ using FinanceApp.Application.Beheviors;
 using FinanceApp.Application.Exceptions;
 using FinanceApp.Application.Features.Rules;
 using FinanceApp.Application.Features.Validator;
+using FinanceApp.Application.Interfaces.Hangfire;
 using FinanceApp.Application.Interfaces.Services;
 using FluentValidation;
 using MediatR;
@@ -31,6 +32,7 @@ namespace FinanceApp.Application
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(FluentValidationBehavior<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingPipelineBehavior<,>));
 
+
             services.AddTransient<ExceptionMiddleware>();
             services.AddTransient<AuthRules>();
             services.AddTransient<RefreshTokenRules>();
@@ -39,6 +41,9 @@ namespace FinanceApp.Application
             services.AddTransient<SubscriptionPlanRules>();
             services.AddTransient<ExpenseRules>();
             services.AddTransient<InstructionRules>();
+            services.AddTransient<InvestmentPlanRules>();
+
+
 
 
 

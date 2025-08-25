@@ -3,9 +3,11 @@ using FinanceApp.Application.Features.Commands.ExpenseCommands;
 using FinanceApp.Application.Features.Results.ExpenseResults;
 using FinanceApp.Application.Features.Rules;
 using FinanceApp.Application.Interfaces.Repositories;
+using FinanceApp.Application.Interfaces.Services;
 using FinanceApp.Application.Interfaces.UnitOfWorks;
 using FinanceApp.Domain.Entities;
 using FinanceApp.Persistence.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using System;
@@ -25,6 +27,11 @@ namespace FinanceApp.Tests
         private readonly Mock<ExpenseRules> _mockExpenseRules;
         private readonly ExpenseService _service;
         private readonly IMapper _mapper;
+        private readonly UserManager<User> _userManager;
+        private readonly Mock<ICreditCardService> _mockCreditCardService;
+        private readonly Mock<IPdfReportService> _mockExpenseReportService;
+        private readonly Mock<IMailService> _mockMailService;
+        private readonly Mock<UserManager<User>> _mockUserManager;
 
         public ExpenseServiceTests()
         {
@@ -32,6 +39,26 @@ namespace FinanceApp.Tests
             _mockReadRepository = new Mock<IReadRepository<Expens>>();
             _mockWriteRepository = new Mock<IWriteRepository<Expens>>();
             _mockExpenseRules = new Mock<ExpenseRules>();
+            _mockCreditCardService = new Mock<ICreditCardService>();
+            _mockExpenseReportService = new Mock<IPdfReportService>();
+            _mockMailService = new Mock<IMailService>();
+
+
+            var userStoreMock = new Mock<IUserStore<User>>();
+
+            // UserManager<User> mock nesnesini yarat
+            _mockUserManager = new Mock<UserManager<User>>(
+                userStoreMock.Object,
+                null,  // IOptions<IdentityOptions> optionsAccessor
+                null,  // IPasswordHasher<User> passwordHasher
+                null,  // IEnumerable<IUserValidator<User>> userValidators
+                null,  // IEnumerable<IPasswordValidator<User>> passwordValidators
+                null,  // ILookupNormalizer keyNormalizer
+                null,  // IdentityErrorDescriber errors
+                null,  // IServiceProvider services
+                null   // ILogger<UserManager<User>> logger
+            );
+
 
             var config = new MapperConfiguration(cfg =>
             {
@@ -43,7 +70,7 @@ namespace FinanceApp.Tests
             _mockUnitOfWork.Setup(u => u.GetReadRepository<Expens>()).Returns(_mockReadRepository.Object);
             _mockUnitOfWork.Setup(u => u.GetWriteRepository<Expens>()).Returns(_mockWriteRepository.Object);
 
-            _service = new ExpenseService(_mockUnitOfWork.Object, _mockExpenseRules.Object,_mapper);
+            _service = new ExpenseService(_mockUnitOfWork.Object, _mockExpenseRules.Object,_mapper, _mockCreditCardService.Object, _mockExpenseReportService.Object,_mockMailService.Object, _mockUserManager.Object);
         }
 
         [Fact]
@@ -151,7 +178,7 @@ namespace FinanceApp.Tests
             new() { Name = "Market", Amount = 100, PaidDate = default }
                 });
 
-            var service = new ExpenseService(_mockUnitOfWork.Object, _mockExpenseRules.Object, mockMapper.Object);
+            var service = new ExpenseService(_mockUnitOfWork.Object, _mockExpenseRules.Object, _mapper, _mockCreditCardService.Object, _mockExpenseReportService.Object, _mockMailService.Object, _mockUserManager.Object);
 
             // Act
             var result = await service.GetAllExpenseAndPaymentByUserAsync(userId);
@@ -191,7 +218,7 @@ namespace FinanceApp.Tests
             mockMapper.Setup(m => m.Map<IList<GetAllExpenseByUserQueryResult>>(expenses))
                 .Returns(mappedExpenses);
 
-            var service = new ExpenseService(_mockUnitOfWork.Object, _mockExpenseRules.Object, mockMapper.Object);
+            var service = new ExpenseService(_mockUnitOfWork.Object, _mockExpenseRules.Object, _mapper, _mockCreditCardService.Object, _mockExpenseReportService.Object, _mockMailService.Object, _mockUserManager.Object);
 
             // Act
             var result = await service.GetAllExpensesByUserAsync(userId);
@@ -269,7 +296,7 @@ namespace FinanceApp.Tests
                 new() { Name = "Market", Amount = 100, PaidDate = new DateTime(2025, 7, 10) }
             });
 
-            var service = new ExpenseService(_mockUnitOfWork.Object, _mockExpenseRules.Object, mockMapper.Object);
+            var service = new ExpenseService(_mockUnitOfWork.Object, _mockExpenseRules.Object, _mapper, _mockCreditCardService.Object, _mockExpenseReportService.Object, _mockMailService.Object, _mockUserManager.Object);
 
             // Act
             var result = await service.GetLast3ExpenseByUserAsync(userId);
@@ -350,7 +377,7 @@ namespace FinanceApp.Tests
             mockMapper.Setup(m => m.Map<IList<GetLastMonthExpenseTotalAmountQueryResult>>(instructions))
                 .Returns(instructions.Select(i => new GetLastMonthExpenseTotalAmountQueryResult { Amount = i.Amount }).ToList());
 
-            var service = new ExpenseService(_mockUnitOfWork.Object, _mockExpenseRules.Object, mockMapper.Object);
+            var service = new ExpenseService(_mockUnitOfWork.Object, _mockExpenseRules.Object, _mapper, _mockCreditCardService.Object, _mockExpenseReportService.Object, _mockMailService.Object, _mockUserManager.Object);
 
             // Act
             var result = await service.GetLastMonthExpenseTotalAmountAsync(userId);

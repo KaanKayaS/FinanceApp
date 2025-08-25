@@ -27,6 +27,7 @@ namespace FinanceApp.Api.Controllers
         }
 
         [HttpPost("{id}/upload-image")]
+        [Authorize(Roles = "Admin")] 
         public async Task<IActionResult> UploadImage(int id, IFormFile file)
         {
             var command = new UploadPlatformImageCommand

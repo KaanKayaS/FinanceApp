@@ -27,7 +27,10 @@ namespace FinanceApp.Persistence.Data
                         new Menu { Id = 11, Name = "Talimatlarım", ParentId = 9, Order = 2 },
                         new Menu { Id = 12, Name = "Abone İşlemleri", ParentId = null, Order = 4},
                         new Menu { Id = 13, Name = "Aboneliklerim", ParentId = 12, Order = 1 },
-                        new Menu { Id = 14, Name = "Dijital Platform Aboneliği", ParentId = 12, Order = 2 }
+                        new Menu { Id = 14, Name = "Dijital Platform Aboneliği", ParentId = 12, Order = 2 },
+                        new Menu { Id = 15, Name = "Yatırım Planı İşlemleri", ParentId = null, Order = 5 },
+                        new Menu { Id = 16, Name = "Yatırım Planlarım", ParentId = 15, Order = 1 },
+                        new Menu { Id = 17, Name = "Yatırım Planı Oluştur", ParentId = 15, Order = 2 }
                         );
         }
     }

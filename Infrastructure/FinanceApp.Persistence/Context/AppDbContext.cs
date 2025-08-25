@@ -1,4 +1,5 @@
 ﻿using FinanceApp.Domain.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -15,13 +16,14 @@ namespace FinanceApp.Persistence.Context
 {
     public class AppDbContext : IdentityDbContext<User, Role, int>
     {
+        public AppDbContext(DbContextOptions<AppDbContext> options)
+            : base(options)
+        {
+        }
+
         public AppDbContext()
         {
             
-        }
-
-        public AppDbContext(DbContextOptions options) : base(options)
-        {
         }
 
         public DbSet<Payment> Payments { get; set; }
@@ -34,6 +36,10 @@ namespace FinanceApp.Persistence.Context
         public DbSet<Instructions> Instructions { get; set; }
         public DbSet<BalanceMemory> BalanceMemories { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
+        public DbSet<InvestmentPlan> InvestmentPlans { get; set; }
+        public DbSet<InvestmentPlanPayment> InvestmentPlanPayments { get; set; }
+        public DbSet<SystemSettings> SystemSettings { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -44,19 +50,19 @@ namespace FinanceApp.Persistence.Context
                 .HasOne(m => m.User)
                 .WithMany(u => u.Memberships)
                 .HasForeignKey(m => m.UserId)
-                .OnDelete(DeleteBehavior.Restrict); // Cascade kapalı
+                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Memberships>()
                 .HasOne(m => m.DigitalPlatform)
                 .WithMany(d => d.Memberships)
                 .HasForeignKey(m => m.DigitalPlatformId)
-                .OnDelete(DeleteBehavior.Restrict); // Cascade kapalı
+                .OnDelete(DeleteBehavior.Restrict); 
 
             modelBuilder.Entity<Memberships>()
                 .HasOne(m => m.SubscriptionPlan)
                 .WithMany(sp => sp.Memberships)
                 .HasForeignKey(m => m.SubscriptionPlanId)
-                .OnDelete(DeleteBehavior.Restrict); // Cascade kapalı
+                .OnDelete(DeleteBehavior.Restrict); // Cascade yapma hata aldım
 
 
             // CreditCard — User
@@ -91,7 +97,7 @@ namespace FinanceApp.Persistence.Context
             // SubscriptionPlan Price için decimal tip ayarı
             modelBuilder.Entity<SubscriptionPlan>()
                 .Property(sp => sp.Price)
-                .HasColumnType("decimal(18,2)");  
+                .HasColumnType("decimal(18,2)");
 
             // AuditLog — User ilişkisi (opsiyonel)
             modelBuilder.Entity<AuditLog>()
@@ -108,6 +114,19 @@ namespace FinanceApp.Persistence.Context
             modelBuilder.Entity<AuditLog>()
                 .Property(a => a.ResponseData)
                 .HasColumnType("nvarchar(max)");
+
+
+            modelBuilder.Entity<InvestmentPlanPayment>()
+                .HasOne(p => p.InvestmentPlan)
+                .WithMany(p => p.InvestmentPlanPayments)
+                .HasForeignKey(p => p.InvestmentPlanId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<InvestmentPlanPayment>()
+                .HasOne(p => p.CreditCard)
+                .WithMany(c => c.InvestmentPlanPayments)
+                .HasForeignKey(p => p.CreditCardId)
+                .OnDelete(DeleteBehavior.Restrict);
 
         }
     }

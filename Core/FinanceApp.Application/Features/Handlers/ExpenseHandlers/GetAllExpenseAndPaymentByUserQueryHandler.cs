@@ -21,8 +21,7 @@ using System.Threading.Tasks;
 
 namespace FinanceApp.Application.Features.Handlers.ExpenseHandlers
 {
-    public class GetAllExpenseAndPaymentByUserQueryHandler : BaseHandler, IRequestHandler<GetAllExpenseAndPaymentByUserQuery,
-        IList<GetAllExpenseAndPaymentByUserQueryResult>>
+    public class GetAllExpenseAndPaymentByUserQueryHandler : BaseHandler, IRequestHandler<GetAllExpenseAndPaymentByUserQuery, IList<GetAllExpenseAndPaymentByUserQueryResult>>
     {
         private readonly AuthRules authRules;
         private readonly IExpenseService expenseService;
@@ -35,7 +34,7 @@ namespace FinanceApp.Application.Features.Handlers.ExpenseHandlers
         }
 
         public async Task<IList<GetAllExpenseAndPaymentByUserQueryResult>> Handle(GetAllExpenseAndPaymentByUserQuery request, CancellationToken cancellationToken)
-         {
+        {
             int userId = await authRules.GetValidatedUserId(httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
             return await expenseService.GetAllExpenseAndPaymentByUserAsync(userId);

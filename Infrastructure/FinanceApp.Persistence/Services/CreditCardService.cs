@@ -31,7 +31,6 @@ namespace FinanceApp.Persistence.Services
         {
             var creditCard = await _unitOfWork.GetReadRepository<CreditCard>().GetAsync(x => x.Id == request.Id);
             await _creditCardRules.CreditCardNoNotFound(creditCard);
-
             await _creditCardRules.DoesThisCardBelongToYou(creditCard, userId);
 
             creditCard.Balance += request.Balance;
@@ -40,9 +39,10 @@ namespace FinanceApp.Persistence.Services
 
             await _unitOfWork.GetWriteRepository<BalanceMemory>().AddAsync(new BalanceMemory
             {
-                Name = "Para Yükleme",
+                Name = request.Name ?? "Para Yükleme",
                 Amount = request.Balance,
                 CreditCardId = request.Id,
+                AddBalanceCategory = request.AddBalanceCategory,
             });
 
             await _unitOfWork.SaveAsync();
@@ -60,7 +60,7 @@ namespace FinanceApp.Persistence.Services
                 ValidDate = request.ValidDate,
                 Cvv = request.Cvv,
                 NameOnCard = request.NameOnCard,
-                Balance = 2000.00m
+                Balance = 0
             };
 
             await _unitOfWork.GetWriteRepository<CreditCard>().AddAsync(creditCard);

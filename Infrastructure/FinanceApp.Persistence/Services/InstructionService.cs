@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FinanceApp.Application.DTOs;
 using FinanceApp.Application.Features.Commands.InstructionsCommands;
 using FinanceApp.Application.Features.Exceptions;
 using FinanceApp.Application.Features.Results.InstructionsResults;
@@ -6,9 +7,14 @@ using FinanceApp.Application.Features.Rules;
 using FinanceApp.Application.Interfaces.Services;
 using FinanceApp.Application.Interfaces.UnitOfWorks;
 using FinanceApp.Domain.Entities;
+using MediatR;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,12 +25,25 @@ namespace FinanceApp.Persistence.Services
         private readonly IUnitOfWork unitOfWork;
         private readonly InstructionRules instructionRules;
         private readonly IMapper mapper;
+        private readonly AuthRules authRules;
+        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly UserManager<User> userManager;
+        private readonly IPdfReportService pdfReportService;
+        private readonly IMailService mailService;
 
-        public InstructionService(IUnitOfWork unitOfWork, InstructionRules instructionRules, IMapper mapper)
+        public InstructionService(IUnitOfWork unitOfWork, InstructionRules instructionRules,
+            IMapper mapper, AuthRules authRules, IHttpContextAccessor httpContextAccessor, UserManager<User> userManager,
+            IPdfReportService pdfReportService, IMailService mailService
+            )
         {
             this.unitOfWork = unitOfWork;
             this.instructionRules = instructionRules;
             this.mapper = mapper;
+            this.authRules = authRules;
+            this.httpContextAccessor = httpContextAccessor;
+            this.userManager = userManager;
+            this.pdfReportService = pdfReportService;
+            this.mailService = mailService;
         }
 
         public async Task CreateInstructionAsync(CreateInstructionCommand request, int userId)
@@ -84,6 +103,7 @@ namespace FinanceApp.Persistence.Services
             await unitOfWork.SaveAsync();
         }
 
+
         public async Task<IList<GetAllInstructionsByUserQueryResult>> GetAllUnpaidInstructionsByUserAsync(int userId)
         {
             var instructions = await unitOfWork.GetReadRepository<Instructions>()
@@ -107,6 +127,62 @@ namespace FinanceApp.Persistence.Services
                 PaidInstruction = paidInstruction,
                 TotalAmount = totalAmount
             };
+        }
+
+        public async Task<InstructionDto> GetNameMostRecentInstructionByUserAsync()
+        {
+            int userId = await authRules.GetValidatedUserId(httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            var instructions = await unitOfWork
+                .GetReadRepository<Instructions>()
+                .GetAllAsync(x => x.UserId == userId && x.ScheduledDate > DateTime.UtcNow.AddHours(3));
+
+            var mostRecentInstruction = instructions
+                .OrderBy(x => x.ScheduledDate)
+                .FirstOrDefault();
+
+            return mapper.Map<InstructionDto>(mostRecentInstruction);
+        }
+
+        public async Task<IList<InstructionDto>> GetUnpaidInstructiionsNextMonth()
+        {
+            int userId = await authRules.GetValidatedUserId(httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+            var now = DateTime.UtcNow.AddHours(3);
+            var nextMont = now.AddMonths(1);
+
+            var instructions = await unitOfWork
+                .GetReadRepository<Instructions>()
+                .GetAllAsync(x => x.UserId == userId && x.ScheduledDate > now && x.ScheduledDate  < nextMont);
+
+            return mapper.Map<IList<InstructionDto>>(instructions);
+
+        }
+        public async Task<Unit> GeneratePdfGetUnpaidInstructiionsNextMonthReport(int userId)
+        {
+            var list = await GetUnpaidInstructiionsNextMonth();
+
+            User? user = await userManager.Users.FirstOrDefaultAsync(x => x.Id == userId);
+
+            var pdfBytes = pdfReportService.GenerateInstructionPdf(list);
+
+            using var pdfStream = new MemoryStream(pdfBytes);
+
+            string subject = "Talimat Raporu";
+            string bodyContent = "Önümüzdeki Ay Talimatlarınızı İndirebilirsiniz";
+
+            await mailService.SendMailAsync(
+                 user.Email,
+                 subject,
+                 bodyContent,
+                 true,
+                 attachments: new List<(Stream, string)>
+                 {
+                    (pdfStream, "TalimatRaporu.pdf")
+                 }
+             );
+
+            return Unit.Value;
         }
 
         public async Task RemoveInstructionAsync(int instructionId, int userId)
@@ -179,6 +255,20 @@ namespace FinanceApp.Persistence.Services
                 await unitOfWork.SaveAsync();
             }
            
+        }
+
+        public async Task<IList<GetAllInstructionsByUserQueryResult>> GetTodayUnpaidInstructionsByUserAsync(int userId)
+        {
+            var today = DateTime.Today;
+            var tomorrow = today.AddDays(1);
+
+            var instructions = await unitOfWork.GetReadRepository<Instructions>()
+                .GetAllAsync(x => !x.IsPaid
+                               && x.UserId == userId
+                               && x.ScheduledDate >= today
+                               && x.ScheduledDate < tomorrow);
+
+            return mapper.Map<IList<GetAllInstructionsByUserQueryResult>>(instructions);
         }
     }
 }

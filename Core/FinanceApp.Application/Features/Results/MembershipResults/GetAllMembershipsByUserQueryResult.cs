@@ -9,7 +9,7 @@ namespace FinanceApp.Application.Features.Results.MembershipResult
 {
     public class GetAllMembershipsByUserQueryResult
     {
-        public int Id { get; set; }
+        public int DigitalPlatformId { get; set; }
         public string DigitalPlatformName { get; set; }
         public string ImagePath { get; set; }
         public string SubscriptionPlanName { get; set; }

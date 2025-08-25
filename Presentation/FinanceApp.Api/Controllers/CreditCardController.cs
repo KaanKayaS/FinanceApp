@@ -2,6 +2,7 @@
 using FinanceApp.Application.Features.Commands.RegisterCommands;
 using FinanceApp.Application.Features.Queries.CreditCardQueries;
 using FinanceApp.Application.Features.Queries.PaymentQueries;
+using FinanceApp.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -31,16 +32,18 @@ namespace FinanceApp.Api.Controllers
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> AddBalance([FromQuery] int id, [FromQuery] decimal balance)
+        public async Task<IActionResult> AddBalance([FromQuery] int id, [FromQuery] decimal balance, [FromQuery] AddBalanceCategory addbalanceCategory, [FromQuery] string? name)
         {
             var command = new AddBalanceCreditCardCommand
             {
                 Id = id,
-                Balance = balance
+                Balance = balance,
+                AddBalanceCategory = addbalanceCategory,
+                Name = name
             };
 
             await mediator.Send(command);
-            return Ok(new { message = "Kredi kartınıza bakiye başarıyla yüklendi.", success = true });
+            return Ok("Gelir Eklemeniz Başarıyla Yapıldı.");
         }
 
         [HttpDelete]

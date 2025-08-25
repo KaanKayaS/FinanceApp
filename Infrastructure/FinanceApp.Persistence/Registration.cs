@@ -1,11 +1,15 @@
-﻿using FinanceApp.Application.Interfaces.Repositories;
+﻿using FinanceApp.Application.Interfaces.Hangfire;
+using FinanceApp.Application.Interfaces.Repositories;
 using FinanceApp.Application.Interfaces.Services;
 using FinanceApp.Application.Interfaces.UnitOfWorks;
 using FinanceApp.Domain.Entities;
+using FinanceApp.Persistence.AI;
 using FinanceApp.Persistence.Context;
+using FinanceApp.Persistence.Hangfire;
 using FinanceApp.Persistence.Repositories;
 using FinanceApp.Persistence.Services;
 using FinanceApp.Persistence.UnitOfWorks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,6 +44,7 @@ namespace FinanceApp.Persistence
                 opt.SignIn.RequireConfirmedEmail = true;
             })
                 .AddRoles<Role>()
+                .AddTokenProvider<EmailTokenProvider<User>>("Default")
                 .AddEntityFrameworkStores<AppDbContext>();
 
             services.AddScoped<IInstructionService, InstructionService>();
@@ -52,7 +57,15 @@ namespace FinanceApp.Persistence
             services.AddScoped<ISubscriptionPlanService, SubscriptionPlanService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IAuditLogService, AuditLogService>();
+            services.AddScoped<IInvestmentPlanService, InvestmentPlanService>();
+            services.AddScoped<IMailService, MailService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IPdfReportService, PdfReportService>();
+            services.AddScoped<ISystemSettingsService, SystemSettingsService>();
+            services.AddScoped<AIService>(); // AI Service DI kaydı
 
+
+            services.AddScoped<IMembershipRenewalService, MembershipRenewalService>(); // hangfire servisi
         }
     }
 }

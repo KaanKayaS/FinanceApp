@@ -14,6 +14,7 @@ namespace FinanceApp.Domain.Entities
         public int SubscriptionPlanId { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public bool IsAutoRenewal { get; set; } = true; // kullanıcının "otomatik yenile" isteği
         public User User { get; set; }
         public DigitalPlatform DigitalPlatform { get; set; }
         public SubscriptionPlan SubscriptionPlan { get; set; }

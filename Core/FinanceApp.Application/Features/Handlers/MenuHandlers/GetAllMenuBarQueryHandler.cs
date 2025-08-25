@@ -2,21 +2,12 @@
 using FinanceApp.Application.Bases;
 using FinanceApp.Application.Features.Handlers.CreditCardHandler;
 using FinanceApp.Application.Features.Queries.MenuQueries;
-using FinanceApp.Application.Features.Results.ExpenseResults;
 using FinanceApp.Application.Features.Results.MenuResults;
-using FinanceApp.Application.Features.Rules;
 using FinanceApp.Application.Interfaces.Services;
 using FinanceApp.Application.Interfaces.UnitOfWorks;
-using FinanceApp.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FinanceApp.Application.Features.Handlers.MenuHandlers
 {

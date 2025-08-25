@@ -13,6 +13,7 @@ namespace FinanceApp.Application.Features.Commands.MembershipsCommands
         public int DigitalPlatformId { get; set; }
         public SubscriptionType SubscriptionType { get; set; }
         public int CreditCardId { get; set; }
+        public bool IsAutoRenewal { get; set; }
     }
 
 }

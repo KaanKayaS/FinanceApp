@@ -36,7 +36,6 @@ namespace FinanceApp.Application.Features.Handlers.CreditCardHandler
             int userId = await authRules.GetValidatedUserId(httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
             await creditCardService.AddBalanceAsync(request, userId);
-            logger.LogInformation("Bakiye güncellendi");
             return Unit.Value;
         }
     }

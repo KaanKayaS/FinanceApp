@@ -130,7 +130,7 @@ namespace FinanceApp.Tests
             addedCard.ValidDate.Should().Be(request.ValidDate);
             addedCard.Cvv.Should().Be("123");
             addedCard.NameOnCard.Should().Be("Kaan Kaya");
-            addedCard.Balance.Should().Be(2000.00m);
+            addedCard.Balance.Should().Be(0);
         }
 
         [Fact]

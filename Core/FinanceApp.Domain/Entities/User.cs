@@ -17,7 +17,6 @@ namespace FinanceApp.Domain.Entities
         public ICollection<Expens> Expenses { get; set; }
         public ICollection<Instructions> Instructions { get; set; }
         public ICollection<AuditLog> AuditLogs { get; set; }
-
-
+        public ICollection<InvestmentPlan> InvestmentPlans { get; set; }
     }
 }

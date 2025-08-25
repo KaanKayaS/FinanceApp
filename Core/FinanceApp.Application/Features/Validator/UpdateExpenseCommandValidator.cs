@@ -14,11 +14,13 @@ namespace FinanceApp.Application.Features.Validator
         {
             RuleFor(x => x.Name)
                .NotEmpty().WithMessage("Lütfen isim alanını doldurunuz")
-               .MinimumLength(4);
+               .MinimumLength(4)
+               .MaximumLength(25);
 
             RuleFor(x => x.Amount)
                 .NotEmpty().WithMessage("Lütfen fiyat alanını doldurunuz")
-                .GreaterThan(0);
+                .GreaterThan(0)
+                .LessThanOrEqualTo(1000000).WithMessage("Fiyat değeri 1.000.000' dan küçük olmalıdır.");
         }
     }
 }
