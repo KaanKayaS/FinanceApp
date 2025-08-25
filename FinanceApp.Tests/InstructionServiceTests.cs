@@ -4,9 +4,12 @@ using FinanceApp.Application.Features.Exceptions;
 using FinanceApp.Application.Features.Results.InstructionsResults;
 using FinanceApp.Application.Features.Rules;
 using FinanceApp.Application.Interfaces.Repositories;
+using FinanceApp.Application.Interfaces.Services;
 using FinanceApp.Application.Interfaces.UnitOfWorks;
 using FinanceApp.Domain.Entities;
 using FinanceApp.Persistence.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -25,6 +28,11 @@ namespace FinanceApp.Tests
         private readonly InstructionService _service;
         private readonly Mock<IMapper> _mockMapper;
         private readonly Mock<InstructionRules> _mockInstructionRules;
+        private readonly Mock<AuthRules> _mockAuthRules;
+        private readonly Mock<IHttpContextAccessor> _mockHttpContextAccessor;
+        private readonly Mock<IPdfReportService> _mockPdfReportService;
+        private readonly Mock<IMailService> _mockMailService;
+        private readonly Mock<UserManager<User>> _mockUserManager;
 
 
         public InstructionServiceTests()
@@ -33,12 +41,41 @@ namespace FinanceApp.Tests
             _mockReadRepository = new Mock<IReadRepository<Instructions>>();
             _mockWriteRepository = new Mock<IWriteRepository<Instructions>>();
             _mockInstructionRules = new Mock<InstructionRules>();  
-            _mockMapper = new Mock<IMapper>();                     
+            _mockMapper = new Mock<IMapper>();
+            _mockAuthRules = new Mock<AuthRules>();
+            _mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            _mockPdfReportService = new Mock<IPdfReportService>();
+            _mockMailService = new Mock<IMailService>();
+
+
+            var userStoreMock = new Mock<IUserStore<User>>();
+
+            // UserManager<User> mock nesnesini yarat
+            _mockUserManager = new Mock<UserManager<User>>(
+                userStoreMock.Object,
+                null,  // IOptions<IdentityOptions> optionsAccessor
+                null,  // IPasswordHasher<User> passwordHasher
+                null,  // IEnumerable<IUserValidator<User>> userValidators
+                null,  // IEnumerable<IPasswordValidator<User>> passwordValidators
+                null,  // ILookupNormalizer keyNormalizer
+                null,  // IdentityErrorDescriber errors
+                null,  // IServiceProvider services
+                null   // ILogger<UserManager<User>> logger
+            );
+
 
             _mockUnitOfWork.Setup(u => u.GetReadRepository<Instructions>()).Returns(_mockReadRepository.Object);
             _mockUnitOfWork.Setup(u => u.GetWriteRepository<Instructions>()).Returns(_mockWriteRepository.Object);
 
-            _service = new InstructionService(_mockUnitOfWork.Object, _mockInstructionRules.Object, _mockMapper.Object);
+            _service = new InstructionService(
+                _mockUnitOfWork.Object,
+                _mockInstructionRules.Object,
+                _mockMapper.Object,
+                _mockAuthRules.Object,
+                _mockHttpContextAccessor.Object,
+                _mockUserManager.Object,
+                _mockPdfReportService.Object,
+                _mockMailService.Object);
         }
 
         [Fact]

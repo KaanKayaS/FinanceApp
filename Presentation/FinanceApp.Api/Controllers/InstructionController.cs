@@ -58,10 +58,31 @@ namespace FinanceApp.Api.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetTodayInstruction()
+        {
+            var values = await mediator.Send(new GetTodayInstructionsByUserQuery());
+            return Ok(values);
+        }
+
+        [HttpGet]
         public async Task<IActionResult> GetInstructionCount()
         {
             var values = await mediator.Send(new GetInstructionCountByUserQuery());
             return Ok(values);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetNameMostRecentInstruction()
+        {
+            var values = await mediator.Send(new GetNameMostRecentInstructionByUserQuery());
+            return Ok(values);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> NextMonthInstructionReport()
+        {
+            await mediator.Send(new NextMonthInstructionReportQuery());
+            return StatusCode(StatusCodes.Status200OK, "Talimat Raporunuz mailinize başarıyla gönderildi.");
         }
     }
 }

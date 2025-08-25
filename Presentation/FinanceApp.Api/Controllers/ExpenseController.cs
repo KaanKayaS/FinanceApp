@@ -78,7 +78,40 @@ namespace FinanceApp.Api.Controllers
             return Ok(values);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetDailyNetProfit()
+        {
+            var result = await mediator.Send(new GetDailyProfitQuery());
+            return Ok(result);
+        }
 
+        [HttpGet]
+        public async Task<IActionResult> TheMostExpensiveExpenseByUser()
+        {
+            var result = await mediator.Send(new TheMostExpensiveExpenseByUserQuery());
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDailyExpenseList()
+        {
+            var result = await mediator.Send(new GetDailyExpenseListByUserQuery());
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MonthlyProfitLossByUser()
+        {
+            var result = await mediator.Send(new MonthlyProfitLossByUserQuery());
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MonthlyExpenseReport()
+        {
+            await mediator.Send(new MonthlyExpenseReportQuery());
+            return StatusCode(StatusCodes.Status200OK, "Aylık Harcama Raporunuz mailinize başarıyla gönderildi.");
+        }
     }
 }
 

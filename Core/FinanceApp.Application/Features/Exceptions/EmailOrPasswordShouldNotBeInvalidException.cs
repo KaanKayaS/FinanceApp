@@ -9,6 +9,6 @@ namespace FinanceApp.Application.Features.Exceptions
 {
     public class EmailOrPasswordShouldNotBeInvalidException: BaseException
     {
-        public EmailOrPasswordShouldNotBeInvalidException() : base("Email veya kullanıcı adı hatalı.") { }
+        public EmailOrPasswordShouldNotBeInvalidException() : base("Email veya şifre hatalı.") { }
     }
 }

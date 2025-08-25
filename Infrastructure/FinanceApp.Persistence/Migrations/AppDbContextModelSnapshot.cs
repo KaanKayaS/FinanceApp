@@ -87,6 +87,9 @@ namespace FinanceApp.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AddBalanceCategory")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
@@ -182,63 +185,63 @@ namespace FinanceApp.Persistence.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2025, 7, 22, 14, 34, 30, 932, DateTimeKind.Local).AddTicks(4263),
+                            CreatedDate = new DateTime(2025, 8, 12, 1, 17, 24, 679, DateTimeKind.Local).AddTicks(7475),
                             IsDeleted = false,
                             Name = "Netflix"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2025, 7, 22, 14, 34, 30, 932, DateTimeKind.Local).AddTicks(4277),
+                            CreatedDate = new DateTime(2025, 8, 12, 1, 17, 24, 679, DateTimeKind.Local).AddTicks(7487),
                             IsDeleted = false,
                             Name = "Amazon Prime Video"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2025, 7, 22, 14, 34, 30, 932, DateTimeKind.Local).AddTicks(4278),
+                            CreatedDate = new DateTime(2025, 8, 12, 1, 17, 24, 679, DateTimeKind.Local).AddTicks(7488),
                             IsDeleted = false,
                             Name = "Youtube Premium"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedDate = new DateTime(2025, 7, 22, 14, 34, 30, 932, DateTimeKind.Local).AddTicks(4279),
+                            CreatedDate = new DateTime(2025, 8, 12, 1, 17, 24, 679, DateTimeKind.Local).AddTicks(7489),
                             IsDeleted = false,
                             Name = "TOD"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedDate = new DateTime(2025, 7, 22, 14, 34, 30, 932, DateTimeKind.Local).AddTicks(4281),
+                            CreatedDate = new DateTime(2025, 8, 12, 1, 17, 24, 679, DateTimeKind.Local).AddTicks(7491),
                             IsDeleted = false,
                             Name = "Disney Plus"
                         },
                         new
                         {
                             Id = 6,
-                            CreatedDate = new DateTime(2025, 7, 22, 14, 34, 30, 932, DateTimeKind.Local).AddTicks(4282),
+                            CreatedDate = new DateTime(2025, 8, 12, 1, 17, 24, 679, DateTimeKind.Local).AddTicks(7492),
                             IsDeleted = false,
                             Name = "HBO"
                         },
                         new
                         {
                             Id = 7,
-                            CreatedDate = new DateTime(2025, 7, 22, 14, 34, 30, 932, DateTimeKind.Local).AddTicks(4283),
+                            CreatedDate = new DateTime(2025, 8, 12, 1, 17, 24, 679, DateTimeKind.Local).AddTicks(7493),
                             IsDeleted = false,
                             Name = "Spotify"
                         },
                         new
                         {
                             Id = 8,
-                            CreatedDate = new DateTime(2025, 7, 22, 14, 34, 30, 932, DateTimeKind.Local).AddTicks(4284),
+                            CreatedDate = new DateTime(2025, 8, 12, 1, 17, 24, 679, DateTimeKind.Local).AddTicks(7495),
                             IsDeleted = false,
                             Name = "LinkedIn"
                         },
                         new
                         {
                             Id = 9,
-                            CreatedDate = new DateTime(2025, 7, 22, 14, 34, 30, 932, DateTimeKind.Local).AddTicks(4328),
+                            CreatedDate = new DateTime(2025, 8, 12, 1, 17, 24, 679, DateTimeKind.Local).AddTicks(7496),
                             IsDeleted = false,
                             Name = "EXXEN"
                         });
@@ -318,6 +321,87 @@ namespace FinanceApp.Persistence.Migrations
                     b.ToTable("Instructions");
                 });
 
+            modelBuilder.Entity("FinanceApp.Domain.Entities.InvestmentPlan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("CurrentAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("InvestmentCategory")
+                        .HasColumnType("int");
+
+                    b.Property<int>("InvestmentFrequency")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("TargetDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("TargetPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("InvestmentPlans");
+                });
+
+            modelBuilder.Entity("FinanceApp.Domain.Entities.InvestmentPlanPayment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CreditCardId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("InvestmentPlanId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreditCardId");
+
+                    b.HasIndex("InvestmentPlanId");
+
+                    b.ToTable("InvestmentPlanPayments");
+                });
+
             modelBuilder.Entity("FinanceApp.Domain.Entities.Memberships", b =>
                 {
                     b.Property<int>("Id")
@@ -334,6 +418,9 @@ namespace FinanceApp.Persistence.Migrations
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsAutoRenewal")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -476,6 +563,26 @@ namespace FinanceApp.Persistence.Migrations
                             Name = "Dijital Platform Aboneliği",
                             Order = 2,
                             ParentId = 12
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Name = "Yatırım Planı İşlemleri",
+                            Order = 5
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Name = "Yatırım Planlarım",
+                            Order = 1,
+                            ParentId = 15
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Name = "Yatırım Planı Oluştur",
+                            Order = 2,
+                            ParentId = 15
                         });
                 });
 
@@ -577,7 +684,7 @@ namespace FinanceApp.Persistence.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2025, 7, 22, 11, 34, 30, 932, DateTimeKind.Utc).AddTicks(6567),
+                            CreatedDate = new DateTime(2025, 8, 11, 22, 17, 24, 679, DateTimeKind.Utc).AddTicks(9775),
                             DigitalPlatformId = 1,
                             IsDeleted = false,
                             PlanType = 1,
@@ -586,7 +693,7 @@ namespace FinanceApp.Persistence.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2025, 7, 22, 11, 34, 30, 932, DateTimeKind.Utc).AddTicks(6574),
+                            CreatedDate = new DateTime(2025, 8, 11, 22, 17, 24, 679, DateTimeKind.Utc).AddTicks(9786),
                             DigitalPlatformId = 1,
                             IsDeleted = false,
                             PlanType = 2,
@@ -595,7 +702,7 @@ namespace FinanceApp.Persistence.Migrations
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2025, 7, 22, 11, 34, 30, 932, DateTimeKind.Utc).AddTicks(6575),
+                            CreatedDate = new DateTime(2025, 8, 11, 22, 17, 24, 679, DateTimeKind.Utc).AddTicks(9787),
                             DigitalPlatformId = 2,
                             IsDeleted = false,
                             PlanType = 1,
@@ -604,12 +711,45 @@ namespace FinanceApp.Persistence.Migrations
                         new
                         {
                             Id = 4,
-                            CreatedDate = new DateTime(2025, 7, 22, 11, 34, 30, 932, DateTimeKind.Utc).AddTicks(6576),
+                            CreatedDate = new DateTime(2025, 8, 11, 22, 17, 24, 679, DateTimeKind.Utc).AddTicks(9788),
                             DigitalPlatformId = 2,
                             IsDeleted = false,
                             PlanType = 2,
                             Price = 899.99m
                         });
+                });
+
+            modelBuilder.Entity("FinanceApp.Domain.Entities.SystemSettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SystemSettings");
                 });
 
             modelBuilder.Entity("FinanceApp.Domain.Entities.User", b =>
@@ -847,6 +987,36 @@ namespace FinanceApp.Persistence.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("FinanceApp.Domain.Entities.InvestmentPlan", b =>
+                {
+                    b.HasOne("FinanceApp.Domain.Entities.User", "User")
+                        .WithMany("InvestmentPlans")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FinanceApp.Domain.Entities.InvestmentPlanPayment", b =>
+                {
+                    b.HasOne("FinanceApp.Domain.Entities.CreditCard", "CreditCard")
+                        .WithMany("InvestmentPlanPayments")
+                        .HasForeignKey("CreditCardId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("FinanceApp.Domain.Entities.InvestmentPlan", "InvestmentPlan")
+                        .WithMany("InvestmentPlanPayments")
+                        .HasForeignKey("InvestmentPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreditCard");
+
+                    b.Navigation("InvestmentPlan");
+                });
+
             modelBuilder.Entity("FinanceApp.Domain.Entities.Memberships", b =>
                 {
                     b.HasOne("FinanceApp.Domain.Entities.DigitalPlatform", "DigitalPlatform")
@@ -968,6 +1138,8 @@ namespace FinanceApp.Persistence.Migrations
                 {
                     b.Navigation("BalanceMemories");
 
+                    b.Navigation("InvestmentPlanPayments");
+
                     b.Navigation("Payments");
                 });
 
@@ -976,6 +1148,11 @@ namespace FinanceApp.Persistence.Migrations
                     b.Navigation("Memberships");
 
                     b.Navigation("SubscriptionPlans");
+                });
+
+            modelBuilder.Entity("FinanceApp.Domain.Entities.InvestmentPlan", b =>
+                {
+                    b.Navigation("InvestmentPlanPayments");
                 });
 
             modelBuilder.Entity("FinanceApp.Domain.Entities.Memberships", b =>
@@ -1002,6 +1179,8 @@ namespace FinanceApp.Persistence.Migrations
                     b.Navigation("Expenses");
 
                     b.Navigation("Instructions");
+
+                    b.Navigation("InvestmentPlans");
 
                     b.Navigation("Memberships");
                 });

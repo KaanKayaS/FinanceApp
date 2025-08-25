@@ -23,7 +23,6 @@ namespace FinanceApp.Application.Features.Handlers.InstructionsHandlers
     {
         private readonly AuthRules authRules;
         private readonly IInstructionService instructionService;
-        private readonly IInstructionService ınstructionService;
 
         public GetInstructionCountByUserQueryHandler(IMapper mapper, IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, ILogger<AddBalanceCreditCardCommandHandler> logger,
             AuthRules authRules, IInstructionService instructionService) : base(mapper, unitOfWork, httpContextAccessor, logger)

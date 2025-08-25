@@ -75,7 +75,7 @@ namespace FinanceApp.Persistence.Services
                 DigitalPlatformId = digitalPlatformId,
                 SubscriptionPlanId = plan.Id,
                 StartDate = now,
-                EndDate = endDate
+                EndDate = endDate,
             };
 
             var payment = new Payment

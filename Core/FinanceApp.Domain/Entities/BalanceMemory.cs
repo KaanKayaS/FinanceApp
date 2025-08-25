@@ -12,6 +12,7 @@ namespace FinanceApp.Domain.Entities
         public string Name { get; set; }
         public int CreditCardId { get; set; }
         public decimal Amount { get; set; }
+        public AddBalanceCategory AddBalanceCategory { get; set; }
         public CreditCard CreditCard { get; set; }
     }
 }

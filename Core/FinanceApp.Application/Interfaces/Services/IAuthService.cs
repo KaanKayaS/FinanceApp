@@ -1,4 +1,7 @@
-﻿using FinanceApp.Application.Features.Commands.RegisterCommands;
+﻿using FinanceApp.Application.DTOs;
+using FinanceApp.Application.Features.Commands.ChangePasswordCommands;
+using FinanceApp.Application.Features.Commands.PasswordCommands;
+using FinanceApp.Application.Features.Commands.RegisterCommands;
 using FinanceApp.Application.Features.Results.LoginResults;
 using FinanceApp.Application.Features.Results.RefreshTokenResults;
 using System;
@@ -16,5 +19,8 @@ namespace FinanceApp.Application.Interfaces.Services
         Task RegisterAsync(RegisterCommand request);
         Task RevokeAllRefreshTokensAsync();
         Task RevokeRefreshTokenAsync(string email);
+        Task<bool> ChangePasswordAsync(string userId, ChangePasswordAsyncCommand command);
+        Task ForgotPasswordAsync(string email);
+        Task ResetPasswordAsync(ResetPasswordAsyncCommand command);
     }
 }

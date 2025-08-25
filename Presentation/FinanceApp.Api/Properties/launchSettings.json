@@ -14,7 +14,7 @@
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "http://localhost:5054",
+      "applicationUrl": "https://api.finstats.net",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Production"
       }

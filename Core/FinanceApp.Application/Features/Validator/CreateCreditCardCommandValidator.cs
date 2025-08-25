@@ -24,7 +24,7 @@ namespace FinanceApp.Application.Features.Validator
 
                 RuleFor(x => x.NameOnCard)
                     .NotEmpty().WithMessage("Kart üzerindeki isim boş olamaz.")
-                    .MaximumLength(50).WithMessage("Kart üzerindeki isim en fazla 50 karakter olabilir.");
+                    .MaximumLength(25).WithMessage("Kart üzerindeki isim en fazla 25 karakter olabilir.");
 
                 RuleFor(x => x.Cvv)
                     .NotEmpty().WithMessage("CVV boş olamaz.")

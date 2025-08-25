@@ -23,10 +23,6 @@ namespace FinanceApp.Persistence.Repositories
 
         private DbSet<T> Table { get => _dbContext.Set<T>(); }
 
-        public IQueryable<T> Find(Expression<Func<T, bool>> predicate, bool enableTracking = false)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<IList<T>> GetAllAsync(Expression<Func<T, bool>>? predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, bool enableTracking = false)
         {
@@ -70,6 +66,10 @@ namespace FinanceApp.Persistence.Repositories
 
             return await query.CountAsync();
          }
+        public IQueryable<T> Find(Expression<Func<T, bool>> predicate, bool enableTracking = false)
+        {
+            throw new NotImplementedException();
+        }
 
     }
 }

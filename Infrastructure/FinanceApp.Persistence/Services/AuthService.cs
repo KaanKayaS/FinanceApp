@@ -17,6 +17,13 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using FinanceApp.Application.Hubs;
+using FinanceApp.Persistence.AI;
+using System.Net;
+using FinanceApp.Application.DTOs;
+using FinanceApp.Application.Features.Commands.ChangePasswordCommands;
+using FinanceApp.Application.Features.Commands.PasswordCommands;
+using System.IO;
 
 namespace FinanceApp.Persistence.Services
 {
@@ -30,10 +37,11 @@ namespace FinanceApp.Persistence.Services
         private readonly RefreshTokenRules refreshTokenRules;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
+        private readonly IMailService mailService;
 
         public AuthService(UserManager<User> userManager, RoleManager<Role> roleManager, ITokenService tokenService,
             IConfiguration configuration, AuthRules authRules, RefreshTokenRules refreshTokenRules, IUnitOfWork unitOfWork,
-            IMapper mapper)
+            IMapper mapper, IMailService mailService)
         {
             this.userManager = userManager;
             this.roleManager = roleManager;
@@ -43,6 +51,7 @@ namespace FinanceApp.Persistence.Services
             this.refreshTokenRules = refreshTokenRules;
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
+            this.mailService = mailService;
         }
         public async Task<LoginCommandResult> LoginAsync(string email, string password)
         {
@@ -50,6 +59,12 @@ namespace FinanceApp.Persistence.Services
             bool validPassword = await userManager.CheckPasswordAsync(user, password);
 
             await authRules.EmailOrPasswordShouldNotBeInvalid(user, validPassword);
+
+            if (!await userManager.IsEmailConfirmedAsync(user))
+            {
+                throw new Exception("Lütfen e-posta adresinizi doğrulayınız.");
+            }
+
 
             var roles = await userManager.GetRolesAsync(user);
 
@@ -131,6 +146,17 @@ namespace FinanceApp.Persistence.Services
             }
 
             await userManager.AddToRoleAsync(user, "user");
+
+            var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+         
+            var encodedToken = Uri.EscapeDataString(token);
+            var confirmLink = $"http://api.finstats.net/api/Auth/ConfirmEmail?email={user.Email}&token={encodedToken}";
+        
+
+            string subject = "Email Doğrulama";
+            string bodyContent = $"Lütfen hesabınızı doğrulamak için <a href='{confirmLink}'>buraya tıklayın</a>.";
+
+            await mailService.SendMailAsync(user.Email, subject, bodyContent, true);
         }
 
         public async Task RevokeAllRefreshTokensAsync()
@@ -150,7 +176,61 @@ namespace FinanceApp.Persistence.Services
             await authRules.EmailAddressShouldBeValid(user);
 
             user.RefreshToken = null;
-            await userManager.UpdateAsync(user);
+            await userManager.UpdateAsync(user);                
+        }
+        public async Task<bool> ChangePasswordAsync(string userId, ChangePasswordAsyncCommand command)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+                throw new Exception("Kullanıcı bulunamadı");
+
+            if (command.CurrentPassword == command.NewPassword)
+                throw new Exception("Yeni parolanız son şifrenizden farklı olmalıdır.");
+
+            if (command.NewPassword != command.ConfirmNewPassword)
+                throw new Exception("Yeni parolanız eşleşmiyor.");
+
+            var result = await userManager.ChangePasswordAsync(user, command.CurrentPassword, command.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new Exception($"Şifre değiştirilemedi: {errors}");
+            }
+
+           await RevokeRefreshTokenAsync(user.Email);
+
+            return true;
+        }
+
+        public async Task ForgotPasswordAsync(string email)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if (user == null)
+                throw new Exception("Kullanıcı bulunamadı.");
+
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
+            var encodedToken = Uri.EscapeDataString(token);
+
+            var resetLink = $"https://finstats.net/reset-password?email={user.Email}&token={encodedToken}";
+
+            string subject = "Şifre yenileme";
+            string bodyContent = $"Lütfen şifrenizi sıfırlamak için <a href='{resetLink}'>buraya tıklayın</a>.";
+
+            await mailService.SendMailAsync(user.Email,subject,bodyContent,true);
+        }
+
+        public async Task ResetPasswordAsync(ResetPasswordAsyncCommand command)
+        {
+            var user = await userManager.FindByEmailAsync(command.Email);
+            if (user == null)
+                throw new Exception("Kullanıcı bulunamadı.");
+
+            var token = Uri.UnescapeDataString(command.Token);
+
+            var result = await userManager.ResetPasswordAsync(user, token, command.NewPassword);
+            if (!result.Succeeded)
+                throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
         }
     }
 }

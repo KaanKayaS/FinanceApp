@@ -45,7 +45,7 @@ namespace FinanceApp.Persistence.Services
             var mappedPayments = mapper.Map<IList<GetPaymentsByCardIdQueryResult>>(payments);
             var mappedBalanceMemory = mapper.Map<IList<GetPaymentsByCardIdQueryResult>>(balanceMemory);
 
-            return mappedPayments.Concat(mappedBalanceMemory).ToList();
+            return mappedPayments.Concat(mappedBalanceMemory).OrderByDescending(x => x.PaymentDate).ToList();
         }
     }
 }

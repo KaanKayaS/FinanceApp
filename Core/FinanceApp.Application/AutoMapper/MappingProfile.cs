@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FinanceApp.Application.DTOs;
 using FinanceApp.Application.Features.Commands.RegisterCommands;
 using FinanceApp.Application.Features.Results.CreditCardResults;
 using FinanceApp.Application.Features.Results.DigitalPlatformResults;
@@ -25,6 +26,7 @@ namespace FinanceApp.Application.AutoMapper
 
 
             CreateMap<Memberships, GetAllMembershipsByUserQueryResult>()
+             .ForMember(dest => dest.DigitalPlatformId, opt => opt.MapFrom(src => src.DigitalPlatformId))
              .ForMember(dest => dest.DigitalPlatformName, opt => opt.MapFrom(src => src.SubscriptionPlan.DigitalPlatform.Name))
              .ForMember(dest => dest.SubscriptionPlanName, opt => opt.MapFrom(src => src.SubscriptionPlan.PlanType))
              .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate))
@@ -49,10 +51,17 @@ namespace FinanceApp.Application.AutoMapper
             .ForMember(dest => dest.DigitalPlatformName, opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.PaymentDate, opt => opt.MapFrom(src => src.CreatedDate))
             .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
+            .ForMember(dest => dest.AddBalanceCategory, opt => opt.MapFrom(src => src.AddBalanceCategory))
             .ReverseMap();
 
 
             CreateMap<DigitalPlatform, GetAllDigitalPlatfomQueryResult>()
+            .ReverseMap();
+
+            CreateMap<Instructions, InstructionDto>()
+            .ReverseMap();
+
+            CreateMap<GetAllExpenseAndPaymentByUserQueryResult, TheMostExpensiveExpenseDto>()
             .ReverseMap();
 
             CreateMap<Expens, GetAllExpenseAndPaymentByUserQueryResult>()
@@ -72,6 +81,12 @@ namespace FinanceApp.Application.AutoMapper
             .ForMember(dest => dest.PaidDate, opt => opt.MapFrom(src => src.ScheduledDate))
             .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
             .ReverseMap();
+
+            CreateMap<BalanceMemory, GetAllExpenseAndPaymentByUserQueryResult>()
+           .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+           .ForMember(dest => dest.PaidDate, opt => opt.MapFrom(src => src.CreatedDate))
+           .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount))
+           .ReverseMap();
 
             CreateMap<Instructions, GetLast3ExpenseByUserQueryResult>()
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Title))

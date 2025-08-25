@@ -17,7 +17,11 @@ namespace FinanceApp.Application.Features.Validator
 
             RuleFor(x => x.Balance)
                     .GreaterThan(0).WithMessage("Yüklenecek bakiye 0'dan büyük olmalıdır.")
-                    .LessThanOrEqualTo(10000).WithMessage("Yüklenecek bakiye en fazla 10.000 TL olabilir.");
+                    .LessThanOrEqualTo(1000000).WithMessage("Yüklenecek bakiye en fazla 1.000.000 TL olabilir.");
+
+            RuleFor(x => x.Name)
+                    .MinimumLength(3)
+                    .MaximumLength(30);
         }
     }
 }

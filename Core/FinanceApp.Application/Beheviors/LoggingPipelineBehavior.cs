@@ -59,10 +59,6 @@ namespace FinanceApp.Application.Beheviors
             var stopwatch = Stopwatch.StartNew();   // performans ölçümünü başlat
             var actionName = typeof(TRequest).Name;
 
-            // Basit request data 
-            // string requestData = $"{{\"ActionType\":\"{actionName}\",\"Timestamp\":\"{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}\"}}";
-
-
 
             var requestData = MaskSensitiveData(request);
 

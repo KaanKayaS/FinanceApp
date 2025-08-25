@@ -188,7 +188,7 @@ namespace FinanceApp.Tests
             {
                 new GetAllMembershipsByUserQueryResult
                 {
-                    Id = 1,
+                    DigitalPlatformId = 1,
                     StartDate = fixedDate,
                     EndDate = fixedDate.AddDays(30),
                     IsDeleted = false,
